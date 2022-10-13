@@ -5,7 +5,9 @@ VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMoviesApp", "BlazorMoviesApp\BlazorMoviesApp.csproj", "{0AAD09FF-ABBE-4625-865D-53CF5A83BFD0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesWebApi", "MoviesWebApi\MoviesWebApi.csproj", "{E3D5AC57-A78F-4D52-ACE0-A88EEF32AA87}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesWebApi", "MoviesWebApi\MoviesWebApi.csproj", "{E3D5AC57-A78F-4D52-ACE0-A88EEF32AA87}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesMauiApp", "..\MoviesMauiApp\MoviesMauiApp.csproj", "{72993063-CC8C-4409-B293-131F23F9EB61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,12 @@ Global
 		{E3D5AC57-A78F-4D52-ACE0-A88EEF32AA87}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3D5AC57-A78F-4D52-ACE0-A88EEF32AA87}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3D5AC57-A78F-4D52-ACE0-A88EEF32AA87}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72993063-CC8C-4409-B293-131F23F9EB61}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
