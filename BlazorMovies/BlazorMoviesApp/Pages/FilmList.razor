@@ -1,7 +1,7 @@
 ﻿@page "/films"
 @using BlazorMoviesApp.Models
 @using BlazorMoviesApp.Services
-@inject IFilmsService _moviesService
+@inject IFilmsService _filmsService
 
 <h1>Filmovi</h1>
 
@@ -65,6 +65,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        _films = await _moviesService.GetFilmsAsync();
+        _films = await _filmsService.GetFilmsAsync();
     }
 }

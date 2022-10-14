@@ -33,17 +33,20 @@ namespace BlazorMoviesApp.Services
         public async Task<List<Film>> GetFilmsAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
-            request.Headers.Add("Accept", "application/vnd.github.v3+json");
-            request.Headers.Add("User-Agent", "HttpClientFactory-Sample");
-            //request.SetBrowserRequestMode(BrowserRequestMode.NoCors);
-            //request.SetBrowserRequestCache(BrowserRequestCache.NoStore);
-
+            request.Headers.Add("Accept", "application/json");
+      
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                using var responseStream = await response.Content.ReadAsStreamAsync();
-                var films = await JsonSerializer.DeserializeAsync<IEnumerable<Film>>(responseStream);
-                return films.ToList();
+                string resp = await response.Content.ReadAsStringAsync();    
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
+                {
+                    WriteIndented = true
+                };
+                var films = await JsonSerializer.DeserializeAsync(responseStream, 
+                    typeof(List<Film>), options);
+                return (List<Film>) films;
             }
             else
             {
