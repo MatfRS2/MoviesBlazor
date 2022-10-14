@@ -1,0 +1,70 @@
+﻿@page "/films"
+@using BlazorMoviesApp.Models
+@using BlazorMoviesApp.Services
+@inject IFilmsService _moviesService
+
+<h1>Filmovi</h1>
+
+
+@if (_films == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        <a asp-action="Create">Kreiraj</a>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    Naslov
+                </th>
+                <th>
+                    Početak prikazivanja
+                </th>
+                <th>
+                    Žanr
+                </th>
+                <th>
+                    Uloženo
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in _films)
+            {
+                <tr>
+                    <td>
+                        @item.Naslov.ToString()
+                    </td>
+                    <td>
+                        @item.DatumPocetkaPrikazivanja.ToShortDateString()
+                    </td>
+                    <td>
+                        @item.Zanr
+                    </td>
+                    <td>
+                        @item.Ulozeno
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Izmeni</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalji</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Obriši</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Film> _films;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _films = await _moviesService.GetFilmsAsync();
+    }
+}

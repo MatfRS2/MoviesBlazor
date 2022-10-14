@@ -8,12 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Pages\Films\Create.cshtml" />
+    <Content Remove="Pages\Films\Delete.cshtml" />
+    <Content Remove="Pages\Films\Details.cshtml" />
+    <Content Remove="Pages\Films\Edit.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="6.0.9" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="6.0.9" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Net.Http.Headers" Version="2.2.8" />
   </ItemGroup>
 
   <ItemGroup>
     <ServiceWorker Include="wwwroot\service-worker.js" PublishedContent="wwwroot\service-worker.published.js" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\Films\" />
+    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>
