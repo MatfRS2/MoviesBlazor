@@ -10,5 +10,6 @@ namespace BlazorMoviesApp.Services
     {
         Task<List<Film>> GetFilmsAsync();
         Task<int> Add(FilmAddDTO item);
+        Task<Film> GetFilmAsync(int id);
     }
 }

@@ -72,8 +72,28 @@ namespace BlazorMoviesApp.Services
             }
         }
 
+        public async Task<Film> GetFilmAsync(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films/" + id.ToString());
+            request.Headers.Add("Accept", "application/json");
 
-
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                var responseStream = await response.Content.ReadAsStreamAsync();
+                JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
+                {
+                    WriteIndented = true
+                };
+                var film = await JsonSerializer.DeserializeAsync(responseStream,
+                    typeof(Film), options);
+                return (Film)film;
+            }
+            else
+            {
+                throw new Exception(this.GetType().Name + "::GetFilmsAsync():" + response.Content.ToString());
+            }
+        }
     }
 }
 

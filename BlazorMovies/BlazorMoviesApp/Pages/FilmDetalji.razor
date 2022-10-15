@@ -4,41 +4,45 @@
 @using BlazorMoviesApp.ViewModels
 @using BlazorMoviesApp.Services
 
-@inject IFilmService filmService
+@inject IFilmoviService filmoviService
 
 @if (IzabraniFilm != null)
 {
     @if (AktivniMod == Mod.Pregled)
     {
-        <h2>Details for @IzabraniFilm.FirstName @IzabraniFilm.LastName.ToUpper()</h2>
+        <h2>Detalji za @IzabraniFilm.Naslov.ToUpper()</h2>
         <br />
-        <div><span>id: </span>@IzabraniFilm.Id</div>
-        <div><span>first name: </span>@IzabraniFilm.FirstName</div>
-        <div><span>last name: </span>@IzabraniFilm.LastName</div>
-        <div><span>country: </span>@IzabraniFilm.CountryCode</div>
-        <div><span>date of birth: </span> @IzabraniFilm.DateOfBith?.ToString("MM/dd/yyyy")</div>
+        <div><span>Id: </span>@IzabraniFilm.Id</div>
+        <div><span>Naslov: </span>@IzabraniFilm.Naslov</div>
+        <div><span>Žanr: </span>@IzabraniFilm.Zanr</div>
+        <div><span>Uloženo: </span>@IzabraniFilm.Ulozeno</div>
+        <div>
+            <span>Prikazuje se od: </span>
+            @IzabraniFilm.DatumPocetkaPrikazivanja?.ToString("dd.MM.yyyy")
+        </div>
         <button class="clear" @onclick="Izmeni"> Edit</button>
     }
     @if (AktivniMod == Mod.Izmena)
     {
-        <h2>Edit data for @IzabraniFilm.FirstName @IzabraniFilm.LastName.ToUpper()</h2>
+        <h2>Izmena podataka za @IzabraniFilm.Naslov.ToUpper()</h2>
         <div>
-            <label> first name: </label>
-            <input @bind="IzabraniFilm.FirstName" placeholder="FirstName">
+            <label> Naslov: </label>
+            <input @bind="IzabraniFilm.Naslov" placeholder="Naslov">
         </div>
         <div>
-            <label> last name: </label>
-            <input @bind="IzabraniFilm.LastName" placeholder="LastName">
+            <label> Žanr: </label>
+            <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
         </div>
         <div>
-            <label> country: </label>
-            <input @bind="IzabraniFilm.CountryCode" placeholder="CountryCode">
+            <label> Uloženo: </label>
+            <input @bind="IzabraniFilm.Ulozeno" placeholder="Ulozeno">
         </div>
         <div>
-            <label> date of birth: </label>
-            <input type="date" @bind="IzabraniFilm.DateOfBith" placeholder="DateOfBith">
+            <label> Prikazuje se od: </label>
+            <input type="date" @bind="IzabraniFilm.DatumPocetkaPrikazivanja"
+           placeholder="DatumPocetkaPrikazivanja">
         </div>
-        <button class="clear" @onclick="Sacuvaj"> Save</button>
+        <button class="clear" @onclick="Sacuvaj"> Sačuvaj</button>
     }
 }
 
@@ -55,8 +59,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _actors = await _actorService.GetActors();
-        IzabraniFilm = _actors.First(x => x.Id == long.Parse(Id));
+        IzabraniFilm = await filmsService.GetFilmAsync(Convert.ToInt32(Id));
     }
 
     private async Task Izmeni()
