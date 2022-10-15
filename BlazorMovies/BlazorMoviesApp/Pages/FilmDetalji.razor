@@ -4,8 +4,11 @@
 @using BlazorMoviesApp.ViewModels
 @using BlazorMoviesApp.Services
 
+@inject NavigationManager upravljanjeNavigacijom
 @inject IFilmoviService filmoviService
 
+<a class="clear" @onclick="Lista"> ListaFilmova</a>
+<p></p>
 @if (IzabraniFilm != null)
 {
     @if (AktivniMod == Mod.Pregled)
@@ -104,6 +107,11 @@
                 DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
                 Ulozeno = item.Ulozeno
             };
+    }
+
+    private async Task Lista()
+    {
+        upravljanjeNavigacijom.NavigateTo("/filmovi");
     }
 
     private async Task Izmeni()

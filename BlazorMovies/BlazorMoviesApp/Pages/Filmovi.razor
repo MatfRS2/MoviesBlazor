@@ -78,8 +78,8 @@ else
                         @item.Ulozeno
                     </td>
                     <td>
-                        <button class="select" @onclick="@(()=>Izaberi(item))">Izaberi</button>
-                        <button class="delete" @onclick="@(()=>Obrisi(item))">Obriši</button>
+                        <button class="select" @onclick="@(()=>Izaberi(item.Id))">Izaberi</button>
+                        <button class="delete" @onclick="@(()=>Obrisi(item.Id))">Obriši</button>
                     </td>
                 </tr>
             }
@@ -119,6 +119,8 @@ else
         int ret = await filmoviService.Add(filmAddDTO);
         if (ret == 0)
             filmovi = await filmoviService.GetFilmsAsync();
+        else
+            throw new Exception(this.GetType().Name + "::Dodaj():");
     }
 
     private async Task OtkaziKreiranje()
@@ -126,14 +128,18 @@ else
         Dodavanje = false;
     }
 
-    private async Task Izaberi(Film film)
+    private async Task Izaberi(int id)
     {
-        upravljanjeNavigacijom.NavigateTo("/filmdetalji/" + film.Id);
+        upravljanjeNavigacijom.NavigateTo("/filmdetalji/" + id);
     }
 
-    private async Task Obrisi(Film film)
+    private async Task Obrisi(int id)
     {
-        
+        int ret = await filmoviService.Delete(id);
+        if (ret == 0)
+            filmovi = await filmoviService.GetFilmsAsync();
+        else
+            throw new Exception(this.GetType().Name + "::Obrisi():");
     }
 
 

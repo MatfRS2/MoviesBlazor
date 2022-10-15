@@ -127,6 +127,22 @@ namespace BlazorMoviesApp.Services
                 throw new Exception(this.GetType().Name + "::Update():" + response.Content.ToString());
             }
         }
+
+        public async Task<int> Delete(int id)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Films/" + id.ToString());
+            request.Headers.Add("Accept", "application/json");
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return 0;
+            }
+            else
+            {
+                throw new Exception(this.GetType().Name + "::Delete():" + response.Content.ToString());
+            }
+        }
     }
 }
 
