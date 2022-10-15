@@ -1,0 +1,72 @@
+@page "/filmdetalji/{Id}"
+
+@using BlazorMoviesApp.Models
+@using BlazorMoviesApp.ViewModels
+@using BlazorMoviesApp.Services
+
+@inject IFilmService filmService
+
+@if (IzabraniFilm != null)
+{
+    @if (AktivniMod == Mod.Pregled)
+    {
+        <h2>Details for @IzabraniFilm.FirstName @IzabraniFilm.LastName.ToUpper()</h2>
+        <br />
+        <div><span>id: </span>@IzabraniFilm.Id</div>
+        <div><span>first name: </span>@IzabraniFilm.FirstName</div>
+        <div><span>last name: </span>@IzabraniFilm.LastName</div>
+        <div><span>country: </span>@IzabraniFilm.CountryCode</div>
+        <div><span>date of birth: </span> @IzabraniFilm.DateOfBith?.ToString("MM/dd/yyyy")</div>
+        <button class="clear" @onclick="Izmeni"> Edit</button>
+    }
+    @if (AktivniMod == Mod.Izmena)
+    {
+        <h2>Edit data for @IzabraniFilm.FirstName @IzabraniFilm.LastName.ToUpper()</h2>
+        <div>
+            <label> first name: </label>
+            <input @bind="IzabraniFilm.FirstName" placeholder="FirstName">
+        </div>
+        <div>
+            <label> last name: </label>
+            <input @bind="IzabraniFilm.LastName" placeholder="LastName">
+        </div>
+        <div>
+            <label> country: </label>
+            <input @bind="IzabraniFilm.CountryCode" placeholder="CountryCode">
+        </div>
+        <div>
+            <label> date of birth: </label>
+            <input type="date" @bind="IzabraniFilm.DateOfBith" placeholder="DateOfBith">
+        </div>
+        <button class="clear" @onclick="Sacuvaj"> Save</button>
+    }
+}
+
+@code
+{
+    enum Mod { Pregled, Izmena };
+
+    private Mod AktivniMod { get; set; } = Mod.Pregled;
+
+    private Film IzabraniFilm { get; set; }
+
+    [Parameter]
+    public string Id { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        _actors = await _actorService.GetActors();
+        IzabraniFilm = _actors.First(x => x.Id == long.Parse(Id));
+    }
+
+    private async Task Izmeni()
+    {
+        AktivniMod = Mod.Izmena;
+    }
+
+    private async Task Sacuvaj()
+    {
+        AktivniMod = Mod.Pregled;
+        await _actorService.Update(IzabraniFilm);
+    }
+}

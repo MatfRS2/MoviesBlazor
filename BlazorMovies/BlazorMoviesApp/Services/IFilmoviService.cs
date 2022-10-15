@@ -6,7 +6,7 @@ using BlazorMoviesApp.ViewModels;
 
 namespace BlazorMoviesApp.Services
 {
-    public interface IFilmsService
+    public interface IFilmoviService
     {
         Task<List<Film>> GetFilmsAsync();
         Task<int> Add(FilmAddDTO item);

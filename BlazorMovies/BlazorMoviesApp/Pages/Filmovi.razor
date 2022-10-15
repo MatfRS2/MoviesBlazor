@@ -1,13 +1,15 @@
-﻿@page "/films"
+﻿@page "/filmovi"
 @using BlazorMoviesApp.Models
 @using BlazorMoviesApp.ViewModels
 @using BlazorMoviesApp.Services
-@inject IFilmsService _filmsService
+
+@inject NavigationManager upravljanjeNavigacijom
+@inject IFilmoviService filmoviService
 
 <h1>Filmovi</h1>
 
 
-@if (films == null)
+@if (filmovi == null)
 {
     <p><em>Loading...</em></p>
 }
@@ -60,7 +62,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var item in films)
+            @foreach (var item in filmovi)
             {
                 <tr>
                     <td>
@@ -76,9 +78,8 @@ else
                         @item.Ulozeno
                     </td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@item.Id">Izmeni</a> |
-                        <a asp-action="Details" asp-route-id="@item.Id">Detalji</a> |
-                        <a asp-action="Delete" asp-route-id="@item.Id">Obriši</a>
+                        <button class="select" @onclick="@(()=>Izaberi(item))">Izaberi</button>
+                        <button class="delete" @onclick="@(()=>Obrisi(item))">Obriši</button>
                     </td>
                 </tr>
             }
@@ -87,7 +88,7 @@ else
 }
 
 @code {
-    private List<Film> films;
+    private List<Film> filmovi;
 
     private FilmAddDTO filmAddDTO = new FilmAddDTO()
         {
@@ -104,7 +105,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        films = await _filmsService.GetFilmsAsync();
+        filmovi = await filmoviService.GetFilmsAsync();
     }
 
     private async Task Kreiraj1()
@@ -115,14 +116,25 @@ else
     private async Task Dodaj()
     {
         Dodavanje = false;
-        int ret = await _filmsService.Add(filmAddDTO);
+        int ret = await filmoviService.Add(filmAddDTO);
         if (ret == 0)
-            films = await _filmsService.GetFilmsAsync();
+            filmovi = await filmoviService.GetFilmsAsync();
     }
 
     private async Task OtkaziKreiranje()
     {
         Dodavanje = false;
     }
+
+    private async Task Izaberi(Film film)
+    {
+        upravljanjeNavigacijom.NavigateTo("/filmdetalji/" + film.Id);
+    }
+
+    private async Task Obrisi(Film film)
+    {
+        
+    }
+
 
 }

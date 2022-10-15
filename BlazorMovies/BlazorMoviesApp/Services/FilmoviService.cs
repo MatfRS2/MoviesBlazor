@@ -16,11 +16,11 @@ using BlazorMoviesApp.ViewModels;
 
 namespace BlazorMoviesApp.Services
 {
-    public class FilmsService : IFilmsService
+    public class FilmoviService : IFilmoviService
     {
         private readonly HttpClient _httpClient;
 
-        public FilmsService(HttpClient httpClient)
+        public FilmoviService(HttpClient httpClient)
         {
             _httpClient = httpClient ?? throw new ArgumentNullException(
                 nameof(httpClient));
