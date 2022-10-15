@@ -13,6 +13,7 @@ using System.Text.Json;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using BlazorMoviesApp.ViewModels;
+using System.Text;
 
 namespace BlazorMoviesApp.Services
 {
@@ -36,7 +37,7 @@ namespace BlazorMoviesApp.Services
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
             request.Headers.Add("Accept", "application/json");
-      
+
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -45,9 +46,9 @@ namespace BlazorMoviesApp.Services
                 {
                     WriteIndented = true
                 };
-                var films = await JsonSerializer.DeserializeAsync(responseStream, 
+                var films = await JsonSerializer.DeserializeAsync(responseStream,
                     typeof(List<Film>), options);
-                return (List<Film>) films;
+                return (List<Film>)films;
             }
             else
             {
@@ -59,7 +60,14 @@ namespace BlazorMoviesApp.Services
             item.Id = 0;
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
             request.Headers.Add("Accept", "application/json");
-            request.Content = JsonContent.Create(item);
+            request.Content = JsonContent.Create(new Film()
+            {
+                Id = item.Id,
+                Naslov = item.Naslov,
+                Zanr = item.Zanr,
+                DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
+                Ulozeno = item.Ulozeno,
+            });
 
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -91,7 +99,32 @@ namespace BlazorMoviesApp.Services
             }
             else
             {
-                throw new Exception(this.GetType().Name + "::GetFilmsAsync():" + response.Content.ToString());
+                throw new Exception(this.GetType().Name + "::GetFilmAsync():" + response.Content.ToString());
+            }
+        }
+
+        public async Task<int> Update(FilmUpdateDTO item)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.Id.ToString());
+            request.Headers.Add("Accept", "application/json");
+            request.Content = new StringContent(JsonSerializer.Serialize(
+                new Film()
+                {
+                    Id = item.Id,
+                    Naslov = item.Naslov,
+                    Zanr = item.Zanr,
+                    DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
+                    Ulozeno = item.Ulozeno
+                }),
+                Encoding.UTF8, "application/json");
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return 0;
+            }
+            else
+            {
+                throw new Exception(this.GetType().Name + "::Update():" + response.Content.ToString());
             }
         }
     }

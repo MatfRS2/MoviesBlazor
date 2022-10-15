@@ -12,36 +12,69 @@
     {
         <h2>Detalji za @IzabraniFilm.Naslov.ToUpper()</h2>
         <br />
-        <div><span>Id: </span>@IzabraniFilm.Id</div>
-        <div><span>Naslov: </span>@IzabraniFilm.Naslov</div>
-        <div><span>Žanr: </span>@IzabraniFilm.Zanr</div>
-        <div><span>Uloženo: </span>@IzabraniFilm.Ulozeno</div>
-        <div>
-            <span>Prikazuje se od: </span>
-            @IzabraniFilm.DatumPocetkaPrikazivanja?.ToString("dd.MM.yyyy")
-        </div>
-        <button class="clear" @onclick="Izmeni"> Edit</button>
+        <table>
+            <tr>
+                <td><span>Id: </span></td>
+                <td>@IzabraniFilm.Id</td>
+            </tr>
+            <tr>
+                <td><span>Naslov: </span></td>
+                <td>@IzabraniFilm.Naslov</td>
+            </tr>
+            <tr>
+                <td><span>Žanr: </span></td>
+                <td>@IzabraniFilm.Zanr</td>
+            </tr>
+            <tr>
+                <td><span>Uloženo: </span></td>
+                <td>@IzabraniFilm.Ulozeno</td>
+            </tr>
+            <tr>
+                <td><span>Prikazuje se od: </span></td>
+                <td>@IzabraniFilm.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")</td>
+            </tr>
+        </table>
+        <button class="clear" @onclick="Izmeni"> Izmeni</button>
     }
     @if (AktivniMod == Mod.Izmena)
     {
         <h2>Izmena podataka za @IzabraniFilm.Naslov.ToUpper()</h2>
-        <div>
-            <label> Naslov: </label>
-            <input @bind="IzabraniFilm.Naslov" placeholder="Naslov">
-        </div>
-        <div>
-            <label> Žanr: </label>
-            <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
-        </div>
-        <div>
-            <label> Uloženo: </label>
-            <input @bind="IzabraniFilm.Ulozeno" placeholder="Ulozeno">
-        </div>
-        <div>
-            <label> Prikazuje se od: </label>
-            <input type="date" @bind="IzabraniFilm.DatumPocetkaPrikazivanja"
-           placeholder="DatumPocetkaPrikazivanja">
-        </div>
+        <br />
+        <table>
+            <tr>
+                <td>
+                    <label> Naslov: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Naslov" placeholder="Naslov">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Žanr: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Uloženo: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Ulozeno" placeholder="Ulozeno">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Prikazuje se od: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.DatumPocetkaPrikazivanja"
+                   placeholder="DatumPocetkaPrikazivanja" @bind:format="@FormatDatuma">
+                </td>
+            </tr>
+        </table>
         <button class="clear" @onclick="Sacuvaj"> Sačuvaj</button>
     }
 }
@@ -52,14 +85,25 @@
 
     private Mod AktivniMod { get; set; } = Mod.Pregled;
 
-    private Film IzabraniFilm { get; set; }
+    private FilmUpdateDTO IzabraniFilm { get; set; }
 
     [Parameter]
-    public string Id { get; set; }
+    public string Id { get; set; } = "-1";
+
+    [Parameter]
+    public string FormatDatuma { get; set; } = "dd.MM.yyyy";
 
     protected override async Task OnInitializedAsync()
     {
-        IzabraniFilm = await filmsService.GetFilmAsync(Convert.ToInt32(Id));
+        Film item = await filmoviService.GetFilmAsync(Convert.ToInt32(Id));
+        IzabraniFilm = new FilmUpdateDTO()
+            {
+                Id = item.Id,
+                Naslov = item.Naslov,
+                Zanr = item.Zanr,
+                DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
+                Ulozeno = item.Ulozeno
+            };
     }
 
     private async Task Izmeni()
@@ -70,6 +114,8 @@
     private async Task Sacuvaj()
     {
         AktivniMod = Mod.Pregled;
-        await _actorService.Update(IzabraniFilm);
+        int ret = await filmoviService.Update(IzabraniFilm);
+        if(ret != 0)
+            throw new Exception(this.GetType().Name + "::Sacuvaj():");
     }
 }
