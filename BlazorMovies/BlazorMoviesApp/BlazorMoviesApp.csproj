@@ -26,7 +26,6 @@
 
   <ItemGroup>
     <Folder Include="Pages\Films\" />
-    <Folder Include="ViewModels\" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,124 @@
+﻿@page "/films"
+@using BlazorMoviesApp.Models
+@using BlazorMoviesApp.ViewModels
+@using BlazorMoviesApp.Services
+@inject IFilmsService _filmsService
+
+<h1>Filmovi</h1>
+
+
+@if (films == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        <button disabled="@Dodavanje" @onclick="Kreiraj1"> Kreiraj</button>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <label>
+                        Naslov:
+                        <div hidden="@(! Dodavanje)">
+                            <br /><input @bind="filmAddDTO.Naslov" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Početak prikazivanja:
+                        <div hidden="@(! Dodavanje)">
+                            <br /><input format-value="dd.MM.yyyy" @bind="filmAddDTO.DatumPocetkaPrikazivanja" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Žanr:
+                        <div hidden="@(! Dodavanje)">
+                            <br />
+                            <input @bind="filmAddDTO.Zanr" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Uloženo:
+                        <div hidden="@(! Dodavanje)">
+                            <br />
+                            <input @bind="filmAddDTO.Ulozeno" />
+                            <button @onclick="Dodaj"> Dodaj</button>
+                            <button @onclick="OtkaziKreiranje"> Otkaži</button>
+                        </div>
+                    </label>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in films)
+            {
+                <tr>
+                    <td>
+                        @item.Naslov.ToString()
+                    </td>
+                    <td>
+                        @item.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")
+                    </td>
+                    <td>
+                        @item.Zanr
+                    </td>
+                    <td>
+                        @item.Ulozeno
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Izmeni</a> |
+                        <a asp-action="Details" asp-route-id="@item.Id">Detalji</a> |
+                        <a asp-action="Delete" asp-route-id="@item.Id">Obriši</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Film> films;
+
+    private FilmAddDTO filmAddDTO = new FilmAddDTO()
+        {
+            Naslov = "",
+            DatumPocetkaPrikazivanja = DateTime.Today,
+            Zanr = "",
+            Ulozeno = 1M
+        };
+
+    private bool Dodavanje { get; set; } = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        films = await _filmsService.GetFilmsAsync();
+    }
+
+    private async Task Kreiraj1()
+    {
+        Dodavanje = true;
+    }
+
+    private async Task Dodaj()
+    {
+        Dodavanje = false;
+        int ret = await _filmsService.Add(filmAddDTO);
+        if (ret == 0)
+            films = await _filmsService.GetFilmsAsync();
+    }
+
+    private async Task OtkaziKreiranje()
+    {
+        Dodavanje = false;
+    }
+
+}

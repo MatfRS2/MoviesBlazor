@@ -12,6 +12,7 @@ using global::BlazorMoviesApp.Models;
 using System.Text.Json;
 using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
+using BlazorMoviesApp.ViewModels;
 
 namespace BlazorMoviesApp.Services
 {
@@ -30,6 +31,7 @@ namespace BlazorMoviesApp.Services
             _httpClient.DefaultRequestHeaders.Add(
                 HeaderNames.UserAgent, "HttpRequestsSample");
         }
+
         public async Task<List<Film>> GetFilmsAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
@@ -38,7 +40,6 @@ namespace BlazorMoviesApp.Services
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
-                string resp = await response.Content.ReadAsStringAsync();    
                 var responseStream = await response.Content.ReadAsStreamAsync();
                 JsonSerializerOptions options = new(JsonSerializerDefaults.Web)
                 {
@@ -50,9 +51,28 @@ namespace BlazorMoviesApp.Services
             }
             else
             {
-                throw new Exception(response.Content.ToString());
+                throw new Exception(this.GetType().Name + "::GetFilmsAsync():" + response.Content.ToString());
             }
         }
+        public async Task<int> Add(FilmAddDTO item)
+        {
+            item.Id = 0;
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
+            request.Headers.Add("Accept", "application/json");
+            request.Content = JsonContent.Create(item);
+
+            var response = await _httpClient.SendAsync(request);
+            if (response.IsSuccessStatusCode)
+            {
+                return 0;
+            }
+            else
+            {
+                throw new Exception(this.GetType().Name + "::Add():" + response.Content.ToString());
+            }
+        }
+
+
 
     }
 }
