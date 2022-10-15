@@ -31,7 +31,8 @@ else
                     <label>
                         Početak prikazivanja:
                         <div hidden="@(! Dodavanje)">
-                            <br /><input format-value="dd.MM.yyyy" @bind="filmAddDTO.DatumPocetkaPrikazivanja" />
+                            <br /><input @bind="filmAddDTO.DatumPocetkaPrikazivanja"
+                                     @bind:format="@FormatDatuma" />
                         </div>
                     </label>
                 </th>
@@ -49,7 +50,7 @@ else
                         Uloženo:
                         <div hidden="@(! Dodavanje)">
                             <br />
-                            <input @bind="filmAddDTO.Ulozeno" />
+                            <input type="number" @bind="filmAddDTO.Ulozeno" />
                             <button @onclick="Dodaj"> Dodaj</button>
                             <button @onclick="OtkaziKreiranje"> Otkaži</button>
                         </div>
@@ -97,6 +98,9 @@ else
         };
 
     private bool Dodavanje { get; set; } = false;
+
+    [Parameter]
+    public string FormatDatuma { get; set; } = "dd.MM.yyyy";
 
     protected override async Task OnInitializedAsync()
     {
