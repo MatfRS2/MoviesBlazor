@@ -34,6 +34,7 @@
             </tr>
         </table>
         <button class="clear" @onclick="Izmeni"> Izmeni</button>
+        <button class="clear" @onclick="Otkazi"> Otkaži</button>
     }
     @if (AktivniMod == Mod.Izmena)
     {
@@ -75,6 +76,7 @@
             </tr>
         </table>
         <button class="clear" @onclick="Sacuvaj"> Sačuvaj</button>
+        <button class="clear" @onclick="Otkazi"> Otkaži</button>
     }
 }
 
@@ -152,5 +154,10 @@
         osvezenjeService.ZahtevajOsvezenje();
         if (ret != 0)
             throw new Exception(this.GetType().Name + "::Sacuvaj():");
+    }
+
+    private async Task Otkazi()
+    {
+        IzabraniFilm = null;
     }
 }
