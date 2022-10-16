@@ -2,8 +2,8 @@
 @using BlazorMoviesApp.ViewModels
 @using BlazorMoviesApp.Services
 
-@inject NavigationManager upravljanjeNavigacijom
 @inject IFilmoviService filmoviService
+@inject IOsvezenjeService osvezenjeService
 
 @if (filmovi == null)
 {
@@ -109,6 +109,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
+        osvezenjeService.OsvezenjeJeZahtevano += OsveziKomponentu;
+
         filmovi = await filmoviService.GetFilmsAsync();
     }
 
@@ -145,6 +147,12 @@ else
             filmovi = await filmoviService.GetFilmsAsync();
         else
             throw new Exception(this.GetType().Name + "::Obrisi():");
+    }
+
+    private async void OsveziKomponentu()
+    {
+        filmovi = await filmoviService.GetFilmsAsync();
+        StateHasChanged();
     }
 
 }

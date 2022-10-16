@@ -3,6 +3,7 @@
 @using BlazorMoviesApp.Services
 
 @inject IFilmoviService filmoviService
+@inject IOsvezenjeService osvezenjeService
 
 @if (IzabraniFilm != null)
 {
@@ -147,6 +148,8 @@
     {
         AktivniMod = Mod.Pregled;
         int ret = await filmoviService.Update(IzabraniFilm);
+        IzabraniFilm = null;
+        osvezenjeService.ZahtevajOsvezenje();
         if (ret != 0)
             throw new Exception(this.GetType().Name + "::Sacuvaj():");
     }
