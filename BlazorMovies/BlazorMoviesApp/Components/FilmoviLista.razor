@@ -1,0 +1,150 @@
+﻿@using BlazorMoviesApp.Models
+@using BlazorMoviesApp.ViewModels
+@using BlazorMoviesApp.Services
+
+@inject NavigationManager upravljanjeNavigacijom
+@inject IFilmoviService filmoviService
+
+@if (filmovi == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <p>
+        <button disabled="@(AktivniMod==Mod.Dodavanje)" @onclick="Kreiraj1"> Kreiraj</button>
+    </p>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    <label>
+                        Naslov:
+                        <div hidden="@(AktivniMod==Mod.Pregled)">
+                            <br /><input @bind="filmAddDTO.Naslov" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Početak prikazivanja:
+                        <div hidden="@(AktivniMod==Mod.Pregled)">
+                            <br /><input @bind="filmAddDTO.DatumPocetkaPrikazivanja"
+                                     @bind:format="@FormatDatuma" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Žanr:
+                        <div hidden="@(AktivniMod==Mod.Pregled)">
+                            <br />
+                            <input @bind="filmAddDTO.Zanr" />
+                        </div>
+                    </label>
+                </th>
+                <th>
+                    <label>
+                        Uloženo:
+                        <div hidden="@(AktivniMod==Mod.Pregled)">
+                            <br />
+                            <input type="number" @bind="filmAddDTO.Ulozeno" />
+                            <button @onclick="Dodaj"> Dodaj</button>
+                            <button @onclick="OtkaziKreiranje"> Otkaži</button>
+                        </div>
+                    </label>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in filmovi)
+            {
+                <tr>
+                    <td>
+                        @item.Naslov.ToString()
+                    </td>
+                    <td>
+                        @item.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")
+                    </td>
+                    <td>
+                        @item.Zanr
+                    </td>
+                    <td>
+                        @item.Ulozeno
+                    </td>
+                    <td>
+                        <button class="select" @onclick="@(()=>Izaberi(item.Id))">Izaberi</button>
+                        <button class="delete" @onclick="@(()=>Obrisi(item.Id))">Obriši</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Film> filmovi;
+
+    private FilmAddDTO filmAddDTO = new FilmAddDTO()
+        {
+            Naslov = "",
+            DatumPocetkaPrikazivanja = DateTime.Today,
+            Zanr = "",
+            Ulozeno = 1M
+        };
+
+    enum Mod { Pregled, Dodavanje };
+
+    private Mod AktivniMod { get; set; } = Mod.Pregled;
+
+    [Parameter]
+    public string FormatDatuma { get; set; } = "dd.MM.yyyy";
+
+    [Parameter]
+    public int IzabraniFilmId { get; set; } = -1;
+
+    [Parameter] 
+    public EventCallback<int> IzabraniFilmIdChanged { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        filmovi = await filmoviService.GetFilmsAsync();
+    }
+
+    private async Task Kreiraj1()
+    {
+        AktivniMod = Mod.Dodavanje;
+    }
+
+    private async Task Dodaj()
+    {
+        AktivniMod = Mod.Pregled;
+        int ret = await filmoviService.Add(filmAddDTO);
+        if (ret == 0)
+            filmovi = await filmoviService.GetFilmsAsync();
+        else
+            throw new Exception(this.GetType().Name + "::Dodaj():");
+    }
+
+    private async Task OtkaziKreiranje()
+    {
+        AktivniMod = Mod.Pregled;
+    }
+
+    private async Task Izaberi(int id)
+    {
+        IzabraniFilmId = id;
+        await IzabraniFilmIdChanged.InvokeAsync(IzabraniFilmId);
+    }
+
+    private async Task Obrisi(int id)
+    {
+        int ret = await filmoviService.Delete(id);
+        if (ret == 0)
+            filmovi = await filmoviService.GetFilmsAsync();
+        else
+            throw new Exception(this.GetType().Name + "::Obrisi():");
+    }
+
+}
