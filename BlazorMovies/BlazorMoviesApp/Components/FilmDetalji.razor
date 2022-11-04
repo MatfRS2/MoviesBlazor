@@ -1,0 +1,163 @@
+@using BlazorMoviesApp.Models
+@using BlazorMoviesApp.ViewModels
+@using BlazorMoviesApp.Services
+
+@inject IFilmoviService filmoviService
+@inject IOsvezenjeService osvezenjeService
+
+@if (IzabraniFilm != null)
+{
+    @if (AktivniMod == Mod.Pregled)
+    {
+        <h2>Detalji za @IzabraniFilm.Naslov.ToUpper()</h2>
+        <br />
+        <table>
+            <tr>
+                <td><span>Id: </span></td>
+                <td>@IzabraniFilm.Id</td>
+            </tr>
+            <tr>
+                <td><span>Naslov: </span></td>
+                <td>@IzabraniFilm.Naslov</td>
+            </tr>
+            <tr>
+                <td><span>Žanr: </span></td>
+                <td>@IzabraniFilm.Zanr</td>
+            </tr>
+            <tr>
+                <td><span>Uloženo: </span></td>
+                <td>@IzabraniFilm.Ulozeno</td>
+            </tr>
+            <tr>
+                <td><span>Prikazuje se od: </span></td>
+                <td>@IzabraniFilm.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")</td>
+            </tr>
+        </table>
+        <button class="clear" @onclick="Izmeni"> Izmeni</button>
+        <button class="clear" @onclick="Otkazi"> Otkaži</button>
+    }
+    @if (AktivniMod == Mod.Izmena)
+    {
+        <h2>Izmena podataka za @IzabraniFilm.Naslov.ToUpper()</h2>
+        <br />
+        <table>
+            <tr>
+                <td>
+                    <label> Naslov: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Naslov" placeholder="Naslov">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Žanr: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Uloženo: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.Ulozeno" placeholder="Ulozeno">
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <label> Prikazuje se od: </label>
+                </td>
+                <td>
+                    <input @bind="IzabraniFilm.DatumPocetkaPrikazivanja"
+                   placeholder="DatumPocetkaPrikazivanja" @bind:format="@FormatDatuma">
+                </td>
+            </tr>
+        </table>
+        <button class="clear" @onclick="Sacuvaj"> Sačuvaj</button>
+        <button class="clear" @onclick="Otkazi"> Otkaži</button>
+    }
+}
+
+@code
+{
+    private FilmUpdateDTO izabraniFilm = null;
+
+    private FilmUpdateDTO IzabraniFilm
+    {
+        get => izabraniFilm;
+        set
+        {
+            izabraniFilm = value;
+        }
+    }
+
+    enum Mod { Pregled, Izmena };
+
+    Mod AktivniMod { get; set; } = Mod.Pregled;
+
+    private int filmId = -1;
+
+    [Parameter]
+    public int FilmId
+    {
+        get => filmId;
+        set
+        {
+            if (filmId != value)
+            {
+                filmId = value;
+            }
+        }
+    }
+
+    [Parameter]
+    public string FormatDatuma { get; set; } = "dd.MM.yyyy";
+
+    private async Task OdrediPodatke()
+    {
+        if (filmId > 0)
+        {
+            Film item = await filmoviService.GetFilmAsync(filmId);
+            izabraniFilm = new FilmUpdateDTO()
+                {
+                    Id = item.Id,
+                    Naslov = item.Naslov,
+                    Zanr = item.Zanr,
+                    DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
+                    Ulozeno = item.Ulozeno
+                };
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await OdrediPodatke();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await OdrediPodatke();
+    }
+
+    private async Task Izmeni()
+    {
+        AktivniMod = Mod.Izmena;
+    }
+
+    private async Task Sacuvaj()
+    {
+        AktivniMod = Mod.Pregled;
+        int ret = await filmoviService.Update(IzabraniFilm);
+        IzabraniFilm = null;
+        osvezenjeService.ZahtevajOsvezenje();
+        if (ret != 0)
+            throw new Exception(this.GetType().Name + "::Sacuvaj():");
+    }
+
+    private async Task Otkazi()
+    {
+        IzabraniFilm = null;
+    }
+}

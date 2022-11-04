@@ -1,0 +1,14 @@
+﻿@page "/filmovi"
+@using BlazorMoviesApp.Components
+
+<h1>Filmovi</h1>
+
+
+<FilmoviLista @bind-IzabraniFilmId="IdZaIzabraniFilm" />
+
+<FilmDetalji FilmId="@IdZaIzabraniFilm" />
+
+
+@code {
+    private int IdZaIzabraniFilm { get; set; }
+}
