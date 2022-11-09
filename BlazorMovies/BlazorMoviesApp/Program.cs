@@ -1,5 +1,4 @@
 using BlazorMoviesApp;
-using BlazorMoviesApp.Services;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 
@@ -8,7 +7,5 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
-builder.Services.AddScoped<IFilmoviService, FilmoviService>();
-builder.Services.AddScoped<IOsvezenjeService, OsvezenjeService>();
 
 await builder.Build().RunAsync();
