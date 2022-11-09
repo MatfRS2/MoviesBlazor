@@ -23,10 +23,9 @@ namespace MoviesWebApi.Controllers
 
         // GET: api/Films
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Film>>> GetFilms()
+        public async Task<ActionResult<IEnumerable<Film>>> GetFilm()
         {
-            var films = await _context.Film.ToListAsync();
-            return Ok(films);
+            return await _context.Film.ToListAsync();
         }
 
         // GET: api/Films/5

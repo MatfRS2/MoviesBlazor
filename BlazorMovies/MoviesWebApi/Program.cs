@@ -1,4 +1,9 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using MoviesWebApi.Data;
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddDbContext<MoviesWebApiContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContext") ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContext' not found.")));
 
 // Add services to the container.
 
@@ -8,6 +13,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    SeedData.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
