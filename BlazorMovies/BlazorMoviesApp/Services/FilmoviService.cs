@@ -48,7 +48,9 @@ namespace BlazorMoviesApp.Services
                 };
                 var films = await JsonSerializer.DeserializeAsync(responseStream,
                     typeof(List<Film>), options);
-                return (List<Film>)films;
+                if(films!=null)
+                    return (List<Film>)films;
+                return new List<Film>();
             }
             else
             {
@@ -95,7 +97,10 @@ namespace BlazorMoviesApp.Services
                 };
                 var film = await JsonSerializer.DeserializeAsync(responseStream,
                     typeof(Film), options);
-                return (Film)film;
+                if (film != null)
+                    return (Film)film;
+                else
+                    return new Film() {Id = -1};
             }
             else
             {
