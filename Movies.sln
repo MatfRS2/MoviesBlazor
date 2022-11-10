@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMoviesApp", "BlazorMo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesMauiApp", "BlazorMovies\MoviesMauiApp\MoviesMauiApp.csproj", "{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MoviesRazorClassLibrary", "MoviesRazorClassLibrary\MoviesRazorClassLibrary.csproj", "{A55365FE-C4EA-4BCE-9CEF-AAE984D2A3B9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesRazorClassLibrary", "BlazorMovies\MoviesRazorClassLibrary\MoviesRazorClassLibrary.csproj", "{A774D12E-C703-4AB9-870D-CDCD562BD830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,10 +31,10 @@ Global
 		{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{A55365FE-C4EA-4BCE-9CEF-AAE984D2A3B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A55365FE-C4EA-4BCE-9CEF-AAE984D2A3B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A55365FE-C4EA-4BCE-9CEF-AAE984D2A3B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A55365FE-C4EA-4BCE-9CEF-AAE984D2A3B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A774D12E-C703-4AB9-870D-CDCD562BD830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A774D12E-C703-4AB9-870D-CDCD562BD830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A774D12E-C703-4AB9-870D-CDCD562BD830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A774D12E-C703-4AB9-870D-CDCD562BD830}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.WebView.Maui;
 using MoviesMauiApp.Data;
+using MoviesMauiApp.Services;
 
 namespace MoviesMauiApp
 {
@@ -21,6 +22,9 @@ namespace MoviesMauiApp
 #endif
 
             builder.Services.AddSingleton<WeatherForecastService>();
+
+            builder.Services.AddScoped<IFilmoviService, FilmoviService>();
+            builder.Services.AddScoped<IOsvezenjeService, OsvezenjeService>();
 
             return builder.Build();
         }
