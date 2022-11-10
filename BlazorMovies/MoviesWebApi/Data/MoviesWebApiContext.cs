@@ -14,6 +14,7 @@ namespace MoviesWebApi.Data
         {
         }
 
-        public DbSet<MoviesWebApi.Models.Film> Film { get; set; } = default!;
+        public DbSet<Zanr> Zanr { get; set; } = default!;
+        public DbSet<Film> Film { get; set; } = default!;
     }
 }

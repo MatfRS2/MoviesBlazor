@@ -9,10 +9,10 @@ namespace BlazorMoviesApp.Services
 {
     public interface IFilmoviService
     {
-        Task<List<Film>> GetFilmsAsync();
-        Task<int> Add(FilmAddDTO item);
-        Task<Film> GetFilmAsync(int id);
-        Task<int> Update(FilmUpdateDTO item);
+        Task<List<FilmGetDto>> GetFilmsAsync();
+        Task<int> Add(FilmAddDto item);
+        Task<FilmGetDto> GetFilmAsync(int id);
+        Task<int> Update(FilmUpdateDto item);
         Task<int> Delete(int id);
     }
 }
