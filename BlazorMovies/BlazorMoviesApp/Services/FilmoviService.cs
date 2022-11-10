@@ -33,7 +33,7 @@ namespace BlazorMoviesApp.Services
                 HeaderNames.UserAgent, "HttpRequestsSample");
         }
 
-        public async Task<List<Film>> GetFilmsAsync()
+        public async Task<List<FilmGetDto>> GetFilmsAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
             request.Headers.Add("Accept", "application/json");
@@ -47,26 +47,26 @@ namespace BlazorMoviesApp.Services
                     WriteIndented = true
                 };
                 var films = await JsonSerializer.DeserializeAsync(responseStream,
-                    typeof(List<Film>), options);
+                    typeof(List<FilmGetDto>), options);
                 if(films!=null)
-                    return (List<Film>)films;
-                return new List<Film>();
+                    return (List<FilmGetDto>)films;
+                return new List<FilmGetDto>();
             }
             else
             {
                 throw new Exception(this.GetType().Name + "::GetFilmsAsync():" + response.Content.ToString());
             }
         }
-        public async Task<int> Add(FilmAddDTO item)
+        public async Task<int> Add(FilmAddDto item)
         {
-            item.Id = 0;
+            item.FilmId = 0;
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
             request.Headers.Add("Accept", "application/json");
             request.Content = JsonContent.Create(new Film()
             {
-                Id = item.Id,
+                FilmId = item.FilmId,
                 Naslov = item.Naslov,
-                Zanr = item.Zanr,
+                ZanrId = item.ZanrId,
                 DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
                 Ulozeno = item.Ulozeno,
             });
@@ -100,7 +100,7 @@ namespace BlazorMoviesApp.Services
                 if (film != null)
                     return (Film)film;
                 else
-                    return new Film() {Id = -1};
+                    return new Film() {FilmId = -1};
             }
             else
             {
@@ -108,16 +108,16 @@ namespace BlazorMoviesApp.Services
             }
         }
 
-        public async Task<int> Update(FilmUpdateDTO item)
+        public async Task<int> Update(FilmUpdateDto item)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.Id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.FilmId.ToString());
             request.Headers.Add("Accept", "application/json");
             request.Content = new StringContent(JsonSerializer.Serialize(
                 new Film()
                 {
-                    Id = item.Id,
+                    FilmId = item.FilmId,
                     Naslov = item.Naslov,
-                    Zanr = item.Zanr,
+                    ZanrId = item.ZanrId,
                     DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
                     Ulozeno = item.Ulozeno
                 }),

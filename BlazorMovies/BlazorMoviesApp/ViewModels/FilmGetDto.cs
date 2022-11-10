@@ -1,13 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using BlazorMoviesApp.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlazorMoviesApp.ViewModels
 {
-    public class FilmAddDto
+    public class FilmGetDto
     {
         public int FilmId { get; set; }
         public string? Naslov { get; set; }
         public DateTime DatumPocetkaPrikazivanja { get; set; }
         public int ZanrId { get; set; }
         public decimal Ulozeno { get; set; }
+        public Zanr Zanr { get; set; }
+
     }
 }

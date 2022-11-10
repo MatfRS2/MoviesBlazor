@@ -14,7 +14,7 @@
         <table>
             <tr>
                 <td><span>Id: </span></td>
-                <td>@IzabraniFilm.Id</td>
+                <td>@IzabraniFilm.FilmId</td>
             </tr>
             <tr>
                 <td><span>Naslov: </span></td>
@@ -22,7 +22,7 @@
             </tr>
             <tr>
                 <td><span>Žanr: </span></td>
-                <td>@IzabraniFilm.Zanr</td>
+                <td>@IzabraniFilm.ZanrId</td>
             </tr>
             <tr>
                 <td><span>Uloženo: </span></td>
@@ -54,7 +54,7 @@
                     <label> Žanr: </label>
                 </td>
                 <td>
-                    <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
+                    <input @bind="IzabraniFilm.ZanrId" placeholder="ZanrId">
                 </td>
             </tr>
             <tr>
@@ -82,9 +82,9 @@
 
 @code
 {
-    private FilmUpdateDTO izabraniFilm = null;
+    private FilmUpdateDto izabraniFilm = null;
 
-    private FilmUpdateDTO IzabraniFilm
+    private FilmUpdateDto IzabraniFilm
     {
         get => izabraniFilm;
         set
@@ -120,11 +120,11 @@
         if (filmId > 0)
         {
             Film item = await filmoviService.GetFilmAsync(filmId);
-            izabraniFilm = new FilmUpdateDTO()
+            izabraniFilm = new FilmUpdateDto()
                 {
-                    Id = item.Id,
+                    FilmId = item.FilmId,
                     Naslov = item.Naslov,
-                    Zanr = item.Zanr,
+                    ZanrId = item.ZanrId,
                     DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
                     Ulozeno = item.Ulozeno
                 };
