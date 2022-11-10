@@ -16,13 +16,28 @@ namespace MoviesWebApi.Data
                 {
                     return;   // DB has been seeded
                 }
+                Zanr[] zanrovi = {
+                    new Zanr{
+                        ZanrId = 1,
+                        Naziv = "Romantic Comedy",
+                    },
+                    new Zanr{
+                        ZanrId = 2,
+                        Naziv = "Comedy",
+                    },
+                    new Zanr{
+                        ZanrId = 3,
+                        Naziv = "Western",
+                    }
 
+                };
+                context.Zanr.AddRange(zanrovi);
                 context.Film.AddRange(
                     new Film
                     {
                         Naslov = "When Harry Met Sally",
                         DatumPocetkaPrikazivanja = DateTime.Parse("1989-2-12"),
-                        Zanr = "Romantic Comedy",
+                        Zanr = zanrovi[0],
                         Ulozeno = 7.99M
                     },
 
@@ -30,7 +45,7 @@ namespace MoviesWebApi.Data
                     {
                         Naslov = "Ghostbusters ",
                         DatumPocetkaPrikazivanja = DateTime.Parse("1984-3-13"),
-                        Zanr = "Comedy",
+                        Zanr = zanrovi[1],
                         Ulozeno = 8.99M
                     },
 
@@ -38,7 +53,7 @@ namespace MoviesWebApi.Data
                     {
                         Naslov = "Ghostbusters 2",
                         DatumPocetkaPrikazivanja = DateTime.Parse("1986-2-23"),
-                        Zanr = "Comedy",
+                        Zanr = zanrovi[1],
                         Ulozeno = 9.99M
                     },
 
@@ -46,7 +61,7 @@ namespace MoviesWebApi.Data
                     {
                         Naslov = "Rio Bravo",
                         DatumPocetkaPrikazivanja = DateTime.Parse("1959-4-15"),
-                        Zanr = "Western",
+                        Zanr = zanrovi[2],
                         Ulozeno = 3.99M
                     }
                 );

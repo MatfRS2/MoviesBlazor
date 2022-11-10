@@ -1,15 +1,25 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MoviesWebApi.Models
 {
     public class Film
     {
-        public int Id { get; set; }
-        public string? Naslov { get; set; }
+        [Key]
+        [Column("Id")]
+        public int FilmId { get; set; }
+        
+        [StringLength(250)]
+        [Required]
+        public string Naslov { get; set; }
 
         [DataType(DataType.Date)]
         public DateTime DatumPocetkaPrikazivanja { get; set; }
-        public string? Zanr { get; set; }
+        
+        [Column(TypeName = "money")] 
         public decimal Ulozeno { get; set; }
+
+        public Zanr Zanr { get; set; }
+        public int ZanrId { get; set; }
     }
 }
