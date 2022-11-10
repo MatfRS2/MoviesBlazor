@@ -2,6 +2,7 @@
 @using BlazorMoviesApp.ViewModels
 @using BlazorMoviesApp.Services
 
+@inject IZanroviService zanroviService
 @inject IFilmoviService filmoviService
 @inject IOsvezenjeService osvezenjeService
 
@@ -19,7 +20,7 @@ else
             <tr>
                 <th>
                     <label>
-                        Naslov:
+                        Naslov
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br /><input @bind="filmAddDto.Naslov" />
                         </div>
@@ -27,7 +28,7 @@ else
                 </th>
                 <th>
                     <label>
-                        Početak prikazivanja:
+                        Početak prikazivanja
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br /><input @bind="filmAddDto.DatumPocetkaPrikazivanja"
                                      @bind:format="@FormatDatuma" />
@@ -36,25 +37,34 @@ else
                 </th>
                 <th>
                     <label>
-                        Žanr:
+                        Žanr
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br />
-                            <input @bind="filmAddDto.ZanrId" />
+                            <select @bind="filmAddDto.ZanrId">
+                                @foreach (var zanr in zanrovi)
+                                {
+                                    <option value="@zanr.ZanrId"> @zanr.Naziv </option>
+                                }
+                            </select>
                         </div>
                     </label>
                 </th>
                 <th>
                     <label>
-                        Uloženo:
+                        Uloženo
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br />
                             <input type="number" @bind="filmAddDto.Ulozeno" />
-                            <button @onclick="Dodaj"> Dodaj</button>
-                            <button @onclick="OtkaziKreiranje"> Otkaži</button>
                         </div>
                     </label>
                 </th>
-                <th></th>
+                <th>
+                    <div hidden="@(AktivniMod==Mod.Pregled)">
+                        <button @onclick="Dodaj"> Dodaj</button>
+                        <button @onclick="OtkaziKreiranje"> Otkaži</button>
+                    </div>
+
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -68,7 +78,7 @@ else
                         @item.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")
                     </td>
                     <td>
-                        @item.ZanrId
+                        @item.Zanr.Naziv
                     </td>
                     <td>
                         @item.Ulozeno
@@ -84,6 +94,7 @@ else
 }
 
 @code {
+    private List<Zanr> zanrovi;
     private List<FilmGetDto> filmovi;
 
     private FilmAddDto filmAddDto = new FilmAddDto()
@@ -111,6 +122,7 @@ else
     {
         osvezenjeService.OsvezenjeJeZahtevano += OsveziKomponentu;
 
+        zanrovi = await zanroviService.GetZanroviAsync();
         filmovi = await filmoviService.GetFilmsAsync();
     }
 

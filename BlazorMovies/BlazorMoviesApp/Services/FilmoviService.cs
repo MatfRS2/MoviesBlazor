@@ -82,7 +82,7 @@ namespace BlazorMoviesApp.Services
             }
         }
 
-        public async Task<Film> GetFilmAsync(int id)
+        public async Task<FilmGetDto> GetFilmAsync(int id)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
@@ -96,11 +96,11 @@ namespace BlazorMoviesApp.Services
                     WriteIndented = true
                 };
                 var film = await JsonSerializer.DeserializeAsync(responseStream,
-                    typeof(Film), options);
+                    typeof(FilmGetDto), options);
                 if (film != null)
-                    return (Film)film;
+                    return (FilmGetDto)film;
                 else
-                    return new Film() {FilmId = -1};
+                    return new FilmGetDto() {FilmId = -1};
             }
             else
             {

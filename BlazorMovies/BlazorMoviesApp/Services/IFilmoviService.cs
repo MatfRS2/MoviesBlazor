@@ -11,7 +11,7 @@ namespace BlazorMoviesApp.Services
     {
         Task<List<FilmGetDto>> GetFilmsAsync();
         Task<int> Add(FilmAddDto item);
-        Task<Film> GetFilmAsync(int id);
+        Task<FilmGetDto> GetFilmAsync(int id);
         Task<int> Update(FilmUpdateDto item);
         Task<int> Delete(int id);
     }
