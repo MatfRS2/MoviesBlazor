@@ -11,7 +11,6 @@
         public decimal Ulozeno { get; set; }
 
         public Zanr Zanr { get; set; }
-
         public int ZanrId { get; set; }
 
         public ICollection<FilmPaket> FilmPaketi { get; set; }
