@@ -11,8 +11,9 @@
         public DateTime DatumFormiranja { get; set; }
 
         public ICollection<FilmPaket> FilmPaketi { get; set; }
-
         public ICollection<Film> Filmovi { get; set; }
 
+        public ICollection<Pretplata> Pretplate { get; set; }
+        public ICollection<Korisnik> Korisnici { get; set; }
     }
 }

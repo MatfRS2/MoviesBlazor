@@ -103,6 +103,44 @@ namespace MoviesWebApi.Data
                     }
                 };
                 context.FilmPaket.AddRange(filmPaketi);
+                Korisnik[] korisnici = new Korisnik[] {
+                    new Korisnik{
+                        Ime = "Marko",
+                        Prezime = "Marković",
+                        Email = "marko_markovic@gmail.com",
+                        Potroseno = 300
+                    },
+                    new Korisnik{
+                        Ime = "Janko",
+                        Prezime = "Janković",
+                        Email = "janko_jankovic@gmail.com",
+                        Potroseno = 10
+                    },
+                };
+                context.Korisnik.AddRange(korisnici);
+                Pretplata[] pretplate = new Pretplata[] {
+                    new Pretplata
+                    {
+                        KorisnikId = 1,
+                        Korisnik = korisnici[0],
+                        DatumIsteka = new DateTime(2022, 12, 25),
+                        Iznos = 10,
+                        PaketId = 1,
+                        Paket = paketi[0],
+                        Status = PretplataStatus.Aktivirana
+                    },
+                    new Pretplata
+                    {
+                        KorisnikId = 2,
+                        Korisnik = korisnici[1],
+                        DatumIsteka = new DateTime(2023, 1, 15),
+                        Iznos = 20,
+                        PaketId = 2,
+                        Paket = paketi[1],
+                        Status = PretplataStatus.Aktivirana
+                    }
+                };
+                context.Pretplata.AddRange(pretplate);
                 context.SaveChanges();
             }
         }
