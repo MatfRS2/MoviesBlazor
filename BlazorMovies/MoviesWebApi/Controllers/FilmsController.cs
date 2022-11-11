@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +18,12 @@ namespace MoviesWebApi.Controllers
     public class FilmsController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public FilmsController(MoviesWebApiContext context)
+        public FilmsController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new InvalidEnumArgumentException(nameof(context));
+            _mapper = mapper ?? throw new InvalidEnumArgumentException(nameof(mapper));
         }
 
         // GET: api/Films
@@ -27,21 +31,7 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<IEnumerable<FilmGetDto>>> GetFilms()
         {
             List<Film> films = await _context.Film.Include(f => f.Zanr).ToListAsync();
-            List<FilmGetDto> ret = new List<FilmGetDto>();
-            foreach (var film in films)
-                ret.Add(new FilmGetDto()
-                {
-                    FilmId = film.FilmId,
-                    DatumPocetkaPrikazivanja = film.DatumPocetkaPrikazivanja,
-                    Naslov = film.Naslov,
-                    Ulozeno = film.Ulozeno,
-                    ZanrId = film.ZanrId,
-                    Zanr = new ZanrDto()
-                    {
-                        ZanrId = film.Zanr.ZanrId,
-                        Naziv = film.Zanr.Naziv
-                    }
-                });
+            List<FilmGetDto> ret = _mapper.Map<List<Film>, List<FilmGetDto>>(films);
             return Ok(ret);
         }
 
@@ -50,24 +40,11 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<FilmGetDto>> GetFilm(int id)
         {
             var film = await _context.Film.Where(f=> f.FilmId == id).Include(f => f.Zanr).SingleOrDefaultAsync();
-
             if (film == null)
             {
                 return NotFound();
             }
-
-            return new FilmGetDto(){
-                FilmId = film.FilmId,
-                DatumPocetkaPrikazivanja = film.DatumPocetkaPrikazivanja,
-                Naslov = film.Naslov,
-                Ulozeno = film.Ulozeno, 
-                ZanrId = film.ZanrId,
-                Zanr = new ZanrDto()
-                {
-                    ZanrId = film.Zanr.ZanrId,
-                    Naziv = film.Zanr.Naziv
-                }
-            };
+            return _mapper.Map<FilmGetDto>(film);
         }
 
         // PUT: api/Films/5
@@ -79,16 +56,11 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-
             var film = await _context.Film.FindAsync(id);
             if (film == null)
                 return NotFound();
-            film.DatumPocetkaPrikazivanja = filmDto.DatumPocetkaPrikazivanja;
-            film.Naslov = filmDto.Naslov;
-            film.Ulozeno = filmDto.Ulozeno;
-            film.ZanrId = filmDto.ZanrId;
+            _mapper.Map<FilmPutDto, Film>(filmDto, film);
             _context.Entry(film).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -112,13 +84,7 @@ namespace MoviesWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Film>> PostFilm(FilmPostDto filmDto)
         {
-            Film film = new Film()
-            {
-                Naslov = filmDto.Naslov,
-                DatumPocetkaPrikazivanja = filmDto.DatumPocetkaPrikazivanja,
-                Ulozeno = filmDto.Ulozeno,
-                ZanrId = filmDto.ZanrId
-            };
+            Film film = _mapper.Map<Film>(filmDto);
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
 
@@ -134,10 +100,8 @@ namespace MoviesWebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.Film.Remove(film);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

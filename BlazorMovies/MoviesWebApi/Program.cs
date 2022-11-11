@@ -4,11 +4,15 @@ using MoviesWebApi.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Add database context
 builder.Services.AddDbContext<MoviesWebApiContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContext") ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContext' not found.")));
 
-string politikaSlobodanLokal = "slobodno_sve_u_lokalu";
+// Add automapper capabilities 
+builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+// Setup CORS rules
+string politikaSlobodanLokal = "slobodno_sve_u_lokalu";
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: politikaSlobodanLokal,
@@ -26,7 +30,8 @@ builder.Services.AddControllers(options =>
 {
     options.RespectBrowserAcceptHeader = true;
 });
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
