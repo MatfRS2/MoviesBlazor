@@ -9,6 +9,6 @@ namespace MoviesWebApi.Models
 
         public string Naziv { get; set; }
         
-        public ICollection<Film> Films { get; set; }
+        public ICollection<Film> Filmovi { get; set; }
     }
 }

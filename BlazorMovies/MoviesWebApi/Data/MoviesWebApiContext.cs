@@ -46,11 +46,43 @@ namespace MoviesWebApi.Data
             modelBuilder.Entity<Film>()
                    .Property(f => f.Ulozeno)
                    .HasColumnType("money");
-            
+
+            modelBuilder.Entity<Paket>().HasKey(p => p.PaketId);
+            modelBuilder.Entity<Paket>()
+                    .Property(z => z.PaketId)
+                    .HasColumnName("Id")
+                    .IsRequired();
+            modelBuilder.Entity<Paket>()
+                   .Property(p => p.DatumFormiranja)
+                   .HasColumnType("date");
+
+            modelBuilder.Entity<FilmPaket>()
+                    .Property(z => z.FilmId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+            modelBuilder.Entity<FilmPaket>()
+                    .Property(z => z.PaketId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+
+            // relacije
             modelBuilder.Entity<Film>()
                     .HasOne(f => f.Zanr)
-                    .WithMany(z => z.Films)
+                    .WithMany(z => z.Filmovi)
                     .HasForeignKey(f => f.ZanrId);
+
+            modelBuilder.Entity<Film>()
+                    .HasMany(f => f.Paketi)
+                    .WithMany(p => p.Filmovi)
+                    .UsingEntity<FilmPaket>(
+                        j => j
+                            .HasOne(fp => fp.Paket)
+                            .WithMany(p => p.FilmPaketi)
+                            .HasForeignKey(fp => fp.PaketId),
+                        j => j
+                            .HasOne(fp => fp.Film)
+                            .WithMany(f => f.FilmPaketi)
+                            .HasForeignKey(fp => fp.FilmId));
         }
     }
 }
