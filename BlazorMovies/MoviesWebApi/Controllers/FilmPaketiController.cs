@@ -30,7 +30,7 @@ namespace MoviesWebApi.Controllers
                 //.Include(x => x.Paket)
                 .ToListAsync();
         }
-
+         
         // GET: api/FilmPaketi/5 7
         [HttpGet("{filmId}")]
         public async Task<ActionResult<FilmPaket>> GetFilmPaket(int filmId, int paketId)
