@@ -17,6 +17,8 @@ namespace MoviesWebApi.Data
 
         public DbSet<Zanr> Zanr { get; set; } = default!;
         public DbSet<Film> Film { get; set; } = default!;
+        public DbSet<Paket> Paket { get; set; } = default!;
+        public DbSet<FilmPaket> FilmPaket { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -53,9 +55,18 @@ namespace MoviesWebApi.Data
                     .HasColumnName("Id")
                     .IsRequired();
             modelBuilder.Entity<Paket>()
+                  .Property(p => p.Naziv)
+                  .HasMaxLength(250)
+                  .IsRequired();
+            modelBuilder.Entity<Paket>()
+                  .Property(p => p.Opis)
+                  .HasMaxLength(1000)
+                  .IsRequired();
+            modelBuilder.Entity<Paket>()
                    .Property(p => p.DatumFormiranja)
                    .HasColumnType("date");
 
+            modelBuilder.Entity<FilmPaket>().HasKey(fp => new { fp.FilmId, fp.PaketId });
             modelBuilder.Entity<FilmPaket>()
                     .Property(z => z.FilmId)
                     .ValueGeneratedNever()
