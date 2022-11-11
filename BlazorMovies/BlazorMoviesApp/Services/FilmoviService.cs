@@ -37,7 +37,7 @@ namespace BlazorMoviesApp.Services
 
         public async Task<List<FilmGetDto>> GetFilmsAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -62,7 +62,7 @@ namespace BlazorMoviesApp.Services
         public async Task<int> Add(FilmAddDto item)
         {
             item.FilmId = 0;
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
             request.Content = JsonContent.Create(_mapper.Map<Film>(item));
             var response = await _httpClient.SendAsync(request);
@@ -78,7 +78,7 @@ namespace BlazorMoviesApp.Services
 
         public async Task<FilmGetDto> GetFilmAsync(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films/" + id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
@@ -103,7 +103,7 @@ namespace BlazorMoviesApp.Services
 
         public async Task<int> Update(FilmUpdateDto item)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.FilmId.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Filmovi/" + item.FilmId.ToString());
             request.Headers.Add("Accept", "application/json");
             Film film = _mapper.Map<Film>(item);
             request.Content = new StringContent(JsonSerializer.Serialize(film),Encoding.UTF8, "application/json");
@@ -120,7 +120,7 @@ namespace BlazorMoviesApp.Services
 
         public async Task<int> Delete(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Films/" + id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Filmovi/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);

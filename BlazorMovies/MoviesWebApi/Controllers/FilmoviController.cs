@@ -15,18 +15,18 @@ namespace MoviesWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FilmsController : ControllerBase
+    public class FilmoviController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public FilmsController(MoviesWebApiContext context, IMapper mapper)
+        public FilmoviController(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        // GET: api/Films
+        // GET: api/Filmovi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FilmGetDto>>> GetFilms()
         {
@@ -35,11 +35,12 @@ namespace MoviesWebApi.Controllers
             return Ok(ret);
         }
 
-        // GET: api/Films/5
+        // GET: api/Filmovi/5
         [HttpGet("{id}")]
         public async Task<ActionResult<FilmGetDto>> GetFilm(int id)
         {
-            var film = await _context.Film.Where(f=> f.FilmId == id).Include(f => f.Zanr).SingleOrDefaultAsync();
+            var film = await _context.Film.Where(f=> f.FilmId == id)
+                .Include(f => f.Zanr).SingleOrDefaultAsync();
             if (film == null)
             {
                 return NotFound();
@@ -47,7 +48,7 @@ namespace MoviesWebApi.Controllers
             return _mapper.Map<FilmGetDto>(film);
         }
 
-        // PUT: api/Films/5
+        // PUT: api/Filmovi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
         public async Task<IActionResult> PutFilm(int id, FilmPutDto filmDto)
@@ -79,7 +80,7 @@ namespace MoviesWebApi.Controllers
             return NoContent();
         }
 
-        // POST: api/Films
+        // POST: api/Filmovi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
         public async Task<ActionResult<Film>> PostFilm(FilmPostDto filmDto)
@@ -91,7 +92,7 @@ namespace MoviesWebApi.Controllers
             return CreatedAtAction("GetFilm", new { id = film.FilmId }, film);
         }
 
-        // DELETE: api/Films/5
+        // DELETE: api/Filmovi/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFilm(int id)
         {
