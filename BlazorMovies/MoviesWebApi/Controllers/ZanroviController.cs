@@ -22,8 +22,8 @@ namespace MoviesWebApi.Controllers
 
         public ZanroviController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context ?? throw new InvalidEnumArgumentException(nameof(context));
-            _mapper = mapper ?? throw new InvalidEnumArgumentException(nameof(mapper));
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Zanrovi

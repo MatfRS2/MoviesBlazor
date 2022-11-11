@@ -14,23 +14,25 @@ using Microsoft.Net.Http.Headers;
 using Microsoft.AspNetCore.Components.WebAssembly.Http;
 using BlazorMoviesApp.ViewModels;
 using System.Text;
+using AutoMapper;
 
 namespace BlazorMoviesApp.Services
 {
     public class FilmoviService : IFilmoviService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMapper _mapper;
 
-        public FilmoviService(HttpClient httpClient)
+        public FilmoviService(HttpClient httpClient, IMapper mapper)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(
-                nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _httpClient.BaseAddress = new Uri("https://localhost:7250");
             // using Microsoft.Net.Http.Headers;
             _httpClient.DefaultRequestHeaders.Add(
                 HeaderNames.Accept, "application/vnd.github.v3+json");
             _httpClient.DefaultRequestHeaders.Add(
                 HeaderNames.UserAgent, "HttpRequestsSample");
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         public async Task<List<FilmGetDto>> GetFilmsAsync()
@@ -62,15 +64,7 @@ namespace BlazorMoviesApp.Services
             item.FilmId = 0;
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
             request.Headers.Add("Accept", "application/json");
-            request.Content = JsonContent.Create(new Film()
-            {
-                FilmId = item.FilmId,
-                Naslov = item.Naslov,
-                ZanrId = item.ZanrId,
-                DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
-                Ulozeno = item.Ulozeno,
-            });
-
+            request.Content = JsonContent.Create(_mapper.Map<Film>(item));
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -86,7 +80,6 @@ namespace BlazorMoviesApp.Services
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
-
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -112,16 +105,8 @@ namespace BlazorMoviesApp.Services
         {
             var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.FilmId.ToString());
             request.Headers.Add("Accept", "application/json");
-            request.Content = new StringContent(JsonSerializer.Serialize(
-                new Film()
-                {
-                    FilmId = item.FilmId,
-                    Naslov = item.Naslov,
-                    ZanrId = item.ZanrId,
-                    DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
-                    Ulozeno = item.Ulozeno
-                }),
-                Encoding.UTF8, "application/json");
+            Film film = _mapper.Map<Film>(item);
+            request.Content = new StringContent(JsonSerializer.Serialize(film),Encoding.UTF8, "application/json");
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
