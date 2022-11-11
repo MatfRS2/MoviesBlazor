@@ -10,7 +10,7 @@ namespace MoviesWebApi.Data
 {
     public class MoviesWebApiContext : DbContext
     {
-        public MoviesWebApiContext (DbContextOptions<MoviesWebApiContext> options)
+        public MoviesWebApiContext(DbContextOptions<MoviesWebApiContext> options)
             : base(options)
         {
         }
@@ -19,6 +19,8 @@ namespace MoviesWebApi.Data
         public DbSet<Film> Film { get; set; } = default!;
         public DbSet<Paket> Paket { get; set; } = default!;
         public DbSet<FilmPaket> FilmPaket { get; set; } = default!;
+        public DbSet<Korisnik> Korisnik { get; set; } = default!;
+        public DbSet<Pretplata> Pretplata { get; set; } = default!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,8 +29,8 @@ namespace MoviesWebApi.Data
             PodesiFilm(modelBuilder);
             PodesiPaket(modelBuilder);
             PodesiFilmPaket(modelBuilder);
-            PodesiPretplata(modelBuilder);
             PodesiKorisnik(modelBuilder);
+            PodesiPretplata(modelBuilder);
 
             // relacije
             modelBuilder.Entity<Film>()
@@ -89,6 +91,72 @@ namespace MoviesWebApi.Data
                                     .HasForeignKey(pr => pr.KorisnikId));
         }
 
+        private static void PodesiZanr(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Zanr>().HasKey(z => z.ZanrId);
+            modelBuilder.Entity<Zanr>()
+                    .Property(z => z.ZanrId)
+                    .HasColumnName("Id")
+                    .ValueGeneratedNever()
+                    .IsRequired();
+            modelBuilder.Entity<Zanr>()
+                   .Property(z => z.Naziv)
+                   .HasMaxLength(250)
+                   .IsRequired();
+        }
+
+        private static void PodesiFilm(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Film>().HasKey(f => f.FilmId);
+            modelBuilder.Entity<Film>()
+                     .Property(f => f.FilmId)
+                     .HasColumnName("Id")
+                     .IsRequired();
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.Naslov)
+                   .HasMaxLength(250)
+                   .IsRequired();
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.DatumPocetkaPrikazivanja)
+                   .HasColumnType("date");
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.Ulozeno)
+                   .HasColumnType("money");
+        }
+
+        private static void PodesiPaket(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Paket>().HasKey(p => p.PaketId);
+            modelBuilder.Entity<Paket>()
+                    .Property(z => z.PaketId)
+                    .HasColumnName("Id")
+                    .IsRequired();
+            modelBuilder.Entity<Paket>()
+                  .Property(p => p.Naziv)
+                  .HasMaxLength(250)
+                  .IsRequired();
+            modelBuilder.Entity<Paket>()
+                  .Property(p => p.Opis)
+                  .HasMaxLength(1000)
+                  .IsRequired();
+            modelBuilder.Entity<Paket>()
+                   .Property(p => p.DatumFormiranja)
+                   .HasColumnType("date");
+        }
+
+        private static void PodesiFilmPaket(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<FilmPaket>().HasKey(fp => new { fp.FilmId, fp.PaketId });
+            modelBuilder.Entity<FilmPaket>()
+                    .Property(z => z.FilmId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+            modelBuilder.Entity<FilmPaket>()
+                    .Property(z => z.PaketId)
+                    .ValueGeneratedNever()
+                    .IsRequired();
+        }
+
         private static void PodesiKorisnik(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Korisnik>().HasKey(x => x.KorisnikId);
@@ -131,72 +199,6 @@ namespace MoviesWebApi.Data
             modelBuilder.Entity<Pretplata>()
                    .Property(p => p.Iznos)
                    .HasColumnType("money");
-        }
-
-        private static void PodesiFilmPaket(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<FilmPaket>().HasKey(fp => new { fp.FilmId, fp.PaketId });
-            modelBuilder.Entity<FilmPaket>()
-                    .Property(z => z.FilmId)
-                    .ValueGeneratedNever()
-                    .IsRequired();
-            modelBuilder.Entity<FilmPaket>()
-                    .Property(z => z.PaketId)
-                    .ValueGeneratedNever()
-                    .IsRequired();
-        }
-
-        private static void PodesiPaket(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Paket>().HasKey(p => p.PaketId);
-            modelBuilder.Entity<Paket>()
-                    .Property(z => z.PaketId)
-                    .HasColumnName("Id")
-                    .IsRequired();
-            modelBuilder.Entity<Paket>()
-                  .Property(p => p.Naziv)
-                  .HasMaxLength(250)
-                  .IsRequired();
-            modelBuilder.Entity<Paket>()
-                  .Property(p => p.Opis)
-                  .HasMaxLength(1000)
-                  .IsRequired();
-            modelBuilder.Entity<Paket>()
-                   .Property(p => p.DatumFormiranja)
-                   .HasColumnType("date");
-        }
-
-        private static void PodesiFilm(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Film>().HasKey(f => f.FilmId);
-            modelBuilder.Entity<Film>()
-                     .Property(f => f.FilmId)
-                     .HasColumnName("Id")
-                     .IsRequired();
-            modelBuilder.Entity<Film>()
-                   .Property(f => f.Naslov)
-                   .HasMaxLength(250)
-                   .IsRequired();
-            modelBuilder.Entity<Film>()
-                   .Property(f => f.DatumPocetkaPrikazivanja)
-                   .HasColumnType("date");
-            modelBuilder.Entity<Film>()
-                   .Property(f => f.Ulozeno)
-                   .HasColumnType("money");
-        }
-
-        private static void PodesiZanr(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<Zanr>().HasKey(z => z.ZanrId);
-            modelBuilder.Entity<Zanr>()
-                    .Property(z => z.ZanrId)
-                    .HasColumnName("Id")
-                    .ValueGeneratedNever()
-                    .IsRequired();
-            modelBuilder.Entity<Zanr>()
-                   .Property(z => z.Naziv)
-                   .HasMaxLength(250)
-                   .IsRequired();
         }
     }
 }
