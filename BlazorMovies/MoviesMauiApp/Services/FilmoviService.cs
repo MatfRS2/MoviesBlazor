@@ -33,7 +33,7 @@ namespace MoviesMauiApp.Services
 
         public async Task<List<Film>> GetFilmsAsync()
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films");
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -58,7 +58,7 @@ namespace MoviesMauiApp.Services
         public async Task<int> Add(FilmAddDTO item)
         {
             item.Id = 0;
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Films");
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
             request.Content = JsonContent.Create(new Film()
             {
@@ -82,7 +82,7 @@ namespace MoviesMauiApp.Services
 
         public async Task<Film> GetFilmAsync(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Films/" + id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);
@@ -108,7 +108,7 @@ namespace MoviesMauiApp.Services
 
         public async Task<int> Update(FilmUpdateDTO item)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Films/" + item.Id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Filmovi/" + item.Id.ToString());
             request.Headers.Add("Accept", "application/json");
             request.Content = new StringContent(JsonSerializer.Serialize(
                 new Film()
@@ -133,7 +133,7 @@ namespace MoviesMauiApp.Services
 
         public async Task<int> Delete(int id)
         {
-            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Films/" + id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Delete, "/api/Filmovi/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
 
             var response = await _httpClient.SendAsync(request);

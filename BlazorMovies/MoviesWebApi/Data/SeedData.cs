@@ -12,7 +12,7 @@ namespace MoviesWebApi.Data
                     DbContextOptions<MoviesWebApiContext>>()))
             {
                 // Look for any Films.
-                if (context.Film.Any())
+                if (context.FilmPaket.Any())
                 {
                     return;   // DB has been seeded
                 }
@@ -32,15 +32,13 @@ namespace MoviesWebApi.Data
 
                 };
                 context.Zanr.AddRange(zanrovi);
-                context.Film.AddRange(
-                    new Film
-                    {
+                Film[] filmovi = new Film[] {
+                    new Film{
                         Naslov = "When Harry Met Sally",
                         DatumPocetkaPrikazivanja = DateTime.Parse("1989-2-12"),
                         Zanr = zanrovi[0],
                         Ulozeno = 7.99M
                     },
-
                     new Film
                     {
                         Naslov = "Ghostbusters ",
@@ -48,7 +46,6 @@ namespace MoviesWebApi.Data
                         Zanr = zanrovi[1],
                         Ulozeno = 8.99M
                     },
-
                     new Film
                     {
                         Naslov = "Ghostbusters 2",
@@ -56,7 +53,6 @@ namespace MoviesWebApi.Data
                         Zanr = zanrovi[1],
                         Ulozeno = 9.99M
                     },
-
                     new Film
                     {
                         Naslov = "Rio Bravo",
@@ -64,7 +60,49 @@ namespace MoviesWebApi.Data
                         Zanr = zanrovi[2],
                         Ulozeno = 3.99M
                     }
-                );
+                };
+                context.Film.AddRange( filmovi );
+                Paket[] paketi = new Paket[] {
+                    new Paket{ 
+                        Naziv = "Standardni",
+                        Opis = "Standardni paket (sa komedijama)",
+                        DatumFormiranja = DateTime.Today
+                    },
+                    new Paket{
+                        Naziv = "Promotivni",
+                        Opis = "Promotivni paket (prošireni skup)",
+                        DatumFormiranja = DateTime.Today
+                    }
+
+                };
+                context.Paket.AddRange(paketi);
+                FilmPaket[] filmPaketi = new FilmPaket[] {
+                    new FilmPaket{
+                        PaketId = 1,
+                        Paket = paketi[0],
+                        FilmId = 2,
+                        Film = filmovi[1]
+                    },
+                    new FilmPaket{
+                        PaketId = 1,
+                        Paket = paketi[0],
+                        FilmId = 3,
+                        Film = filmovi[2]
+                    },
+                    new FilmPaket{
+                        PaketId = 2,
+                        Paket = paketi[1],
+                        FilmId = 4,
+                        Film = filmovi[3]
+                    },
+                    new FilmPaket{
+                        PaketId = 2,
+                        Paket = paketi[1],
+                        FilmId = 1,
+                        Film = filmovi[0]
+                    }
+                };
+                context.FilmPaket.AddRange(filmPaketi);
                 context.SaveChanges();
             }
         }

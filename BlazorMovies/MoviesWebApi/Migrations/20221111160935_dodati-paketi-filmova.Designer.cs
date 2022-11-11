@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoviesWebApi.Data;
 
@@ -11,9 +12,10 @@ using MoviesWebApi.Data;
 namespace MoviesWebApi.Migrations
 {
     [DbContext(typeof(MoviesWebApiContext))]
-    partial class MoviesWebApiContextModelSnapshot : ModelSnapshot
+    [Migration("20221111160935_dodati-paketi-filmova")]
+    partial class dodatipaketifilmova
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -81,13 +83,11 @@ namespace MoviesWebApi.Migrations
 
                     b.Property<string>("Naziv")
                         .IsRequired()
-                        .HasMaxLength(250)
-                        .HasColumnType("nvarchar(250)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Opis")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PaketId");
 

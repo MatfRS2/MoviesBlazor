@@ -1,7 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-
-namespace MoviesWebApi.Models
+﻿namespace MoviesWebApi.Models
 {
     public class Film
     {
@@ -14,6 +11,10 @@ namespace MoviesWebApi.Models
         public decimal Ulozeno { get; set; }
 
         public Zanr Zanr { get; set; }
+
         public int ZanrId { get; set; }
+
+        public ICollection<FilmPaket> FilmPaketi { get; set; }
+        public ICollection<Paket> Paketi { get; set; }
     }
 }

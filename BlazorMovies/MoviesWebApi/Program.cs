@@ -5,8 +5,10 @@ using MoviesWebApi.Data;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add database context
-builder.Services.AddDbContext<MoviesWebApiContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContext") ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContext' not found.")));
+builder.Services.AddDbContext<MoviesWebApiContext>(options => {
+    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContext") 
+        ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContext' not found."));
+    });
 
 // Add automapper capabilities 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());

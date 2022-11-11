@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MoviesWebApi.Data;
 
@@ -11,9 +12,10 @@ using MoviesWebApi.Data;
 namespace MoviesWebApi.Migrations
 {
     [DbContext(typeof(MoviesWebApiContext))]
-    partial class MoviesWebApiContextModelSnapshot : ModelSnapshot
+    [Migration("20221111163331_dodat-kompozitni-kljuc-za-filmpaket")]
+    partial class dodatkompozitnikljuczafilmpaket
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
