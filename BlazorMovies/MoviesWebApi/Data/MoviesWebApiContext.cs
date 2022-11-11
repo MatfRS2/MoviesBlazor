@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using MoviesWebApi.Models;
 
 namespace MoviesWebApi.Data
@@ -16,5 +17,40 @@ namespace MoviesWebApi.Data
 
         public DbSet<Zanr> Zanr { get; set; } = default!;
         public DbSet<Film> Film { get; set; } = default!;
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Zanr>().HasKey(z => z.ZanrId);
+            modelBuilder.Entity<Zanr>()
+                    .Property(z => z.ZanrId)
+                    .HasColumnName("Id")
+                    .ValueGeneratedNever()
+                    .IsRequired();
+            modelBuilder.Entity<Zanr>()
+                   .Property(z => z.Naziv)
+                   .HasMaxLength(250)
+                   .IsRequired();
+
+            modelBuilder.Entity<Film>().HasKey(f => f.FilmId);
+            modelBuilder.Entity<Film>()
+                     .Property(f => f.FilmId)
+                     .HasColumnName("Id")
+                     .IsRequired();
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.Naslov)
+                   .HasMaxLength(250)
+                   .IsRequired();
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.DatumPocetkaPrikazivanja)
+                   .HasColumnType("date");
+            modelBuilder.Entity<Film>()
+                   .Property(f => f.Ulozeno)
+                   .HasColumnType("money");
+            
+            modelBuilder.Entity<Film>()
+                    .HasOne(f => f.Zanr)
+                    .WithMany(z => z.Films)
+                    .HasForeignKey(f => f.ZanrId);
+        }
     }
 }
