@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,10 +18,12 @@ namespace MoviesWebApi.Controllers
     public class ZanroviController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public ZanroviController(MoviesWebApiContext context)
+        public ZanroviController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Zanrovi
@@ -27,13 +31,7 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi()
         {
             List<Zanr> zanrovi = await _context.Zanr.ToListAsync();
-            List<ZanrDto> ret = new List<ZanrDto>();
-            foreach (var zanr in zanrovi)
-                ret.Add(new ZanrDto()
-                {
-                    ZanrId = zanr.ZanrId,
-                    Naziv = zanr.Naziv,
-                });
+            List<ZanrDto> ret = _mapper.Map<List<ZanrDto>>(zanrovi);
             return Ok(ret);
         }
 
@@ -42,16 +40,11 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<ZanrDto>> GetZanr(int id)
         {
             var zanr = await _context.Zanr.Where(z=> z.ZanrId == id).SingleOrDefaultAsync();
-
             if (zanr == null)
             {
                 return NotFound();
             }
-
-            return new ZanrDto(){
-                ZanrId = zanr.ZanrId,
-                Naziv = zanr.Naziv,
-            };
+            return _mapper.Map<ZanrDto>(zanr);
         }
 
         // PUT: api/Zanrovi/5
@@ -63,13 +56,11 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-
             var zanr = await _context.Zanr.FindAsync(id);
             if (zanr == null)
                 return NotFound();
-            zanr.Naziv = zanrDto.Naziv;
+            _mapper.Map<ZanrDto, Zanr>(zanrDto, zanr); 
             _context.Entry(zanr).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -93,15 +84,10 @@ namespace MoviesWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto)
         {
-            Zanr zanr = new Zanr()
-            {
-                ZanrId = zanrDto.ZanrId,
-                Naziv = zanrDto.Naziv
-            };
+            Zanr zanr = _mapper.Map<Zanr>(zanrDto);
             _context.Zanr.Add(zanr);
             await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetZanrovi", new { id = zanr.ZanrId }, zanr);
+            return CreatedAtAction("GetZanrovi", new { id = zanr.ZanrId }, zanrDto);
         }
 
         // DELETE: api/Zanrovi/5
@@ -113,7 +99,6 @@ namespace MoviesWebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.Zanr.Remove(zanr);
             await _context.SaveChangesAsync();
 
