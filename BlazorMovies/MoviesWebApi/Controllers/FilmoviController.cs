@@ -30,7 +30,9 @@ namespace MoviesWebApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<FilmGetDto>>> GetFilms()
         {
-            List<Film> films = await _context.Film.Include(f => f.Zanr).ToListAsync();
+            List<Film> films = await _context.Film
+                .Include(f => f.Zanr)
+                .ToListAsync();
             List<FilmGetDto> ret = _mapper.Map<List<Film>, List<FilmGetDto>>(films);
             return Ok(ret);
         }
@@ -39,8 +41,10 @@ namespace MoviesWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<FilmGetDto>> GetFilm(int id)
         {
-            var film = await _context.Film.Where(f=> f.FilmId == id)
-                .Include(f => f.Zanr).SingleOrDefaultAsync();
+            var film = await _context.Film
+                .Where(f=> f.FilmId == id)
+                .Include(f => f.Zanr)
+                .SingleOrDefaultAsync();
             if (film == null)
             {
                 return NotFound();

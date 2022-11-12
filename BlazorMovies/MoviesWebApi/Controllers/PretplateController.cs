@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
 {
@@ -15,31 +17,39 @@ namespace MoviesWebApi.Controllers
     public class PretplateController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public PretplateController(MoviesWebApiContext context)
+        public PretplateController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Pretplate
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Pretplata>>> GetPretplata()
+        public async Task<ActionResult<IEnumerable<PretplataGetDto>>> GetPretplata()
         {
-            return await _context.Pretplata.ToListAsync();
+            var lista = await _context.Pretplata
+                .Include(x => x.Korisnik)
+                .Include(x => x.Paket)
+                .ToListAsync();
+            return Ok(_mapper.Map<List<Pretplata>, List<PretplataGetDto>>(lista));
         }
 
         // GET: api/Pretplate/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Pretplata>> GetPretplata(int id)
+        public async Task<ActionResult<PretplataGetDto>> GetPretplata(int id)
         {
-            var pretplata = await _context.Pretplata.FindAsync(id);
-
+            var pretplata = await _context.Pretplata
+                .Where( x => x.PretplataId == id)
+                .Include(x => x.Korisnik)
+                .Include(x => x.Paket)
+                .SingleAsync();
             if (pretplata == null)
             {
                 return NotFound();
             }
-
-            return pretplata;
+            return Ok(_mapper.Map<PretplataGetDto>(pretplata));
         }
 
         // PUT: api/Pretplate/5
@@ -51,9 +61,7 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(pretplata).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -69,7 +77,6 @@ namespace MoviesWebApi.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -80,7 +87,6 @@ namespace MoviesWebApi.Controllers
         {
             _context.Pretplata.Add(pretplata);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetPretplata", new { id = pretplata.PretplataId }, pretplata);
         }
 
@@ -93,10 +99,8 @@ namespace MoviesWebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.Pretplata.Remove(pretplata);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
 {
@@ -15,37 +17,40 @@ namespace MoviesWebApi.Controllers
     public class FilmPaketiController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public FilmPaketiController(MoviesWebApiContext context)
+        public FilmPaketiController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/FilmPaketi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<FilmPaket>>> GetFilmPaket()
+        public async Task<ActionResult<IEnumerable<FilmPaketGetDto>>> GetFilmPaket()
         {
-            return await _context.FilmPaket
-                //.Include(x => x.Film)
-                //.Include(x => x.Paket)
+            var lista = await _context.FilmPaket
+                .Include(x => x.Film)
+                .Include(x => x.Paket)
+                .Include(x => x.Film.Zanr)
                 .ToListAsync();
+            return Ok(_mapper.Map<List<FilmPaket>, List<FilmPaketGetDto>>(lista));
         }
          
         // GET: api/FilmPaketi/5 7
         [HttpGet("{filmId}")]
-        public async Task<ActionResult<FilmPaket>> GetFilmPaket(int filmId, int paketId)
+        public async Task<ActionResult<FilmPaketGetDto>> GetFilmPaket(int filmId, int paketId)
         {
             var filmPaket = await _context.FilmPaket
                 .Where(fp => fp.FilmId == filmId && fp.PaketId == paketId)
-                //.Include(fp => fp.Film)
-                //.Include(fp => fp.Paket)
+                .Include(fp => fp.Film)
+                .Include(fp => fp.Paket)
                 .SingleOrDefaultAsync();
             if (filmPaket == null)
             {
                 return NotFound();
             }
-
-            return filmPaket;
+            return _mapper.Map<FilmPaketGetDto>( filmPaket );
         }
 
         // PUT: api/FilmPaketi/5
@@ -57,9 +62,7 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-
             _context.Entry(filmPaket).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -75,7 +78,6 @@ namespace MoviesWebApi.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
@@ -100,7 +102,6 @@ namespace MoviesWebApi.Controllers
                     throw;
                 }
             }
-
             return CreatedAtAction("GetFilmPaket", new { id = filmPaket.FilmId }, filmPaket);
         }
 
@@ -113,10 +114,8 @@ namespace MoviesWebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.FilmPaket.Remove(filmPaket);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
