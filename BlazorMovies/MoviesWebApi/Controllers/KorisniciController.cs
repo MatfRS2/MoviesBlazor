@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
 {
@@ -15,45 +18,44 @@ namespace MoviesWebApi.Controllers
     public class KorisniciController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public KorisniciController(MoviesWebApiContext context)
+        public KorisniciController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Korisnici
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Korisnik>>> GetKorisnik()
+        public async Task<ActionResult<IEnumerable<KorisnikGetDto>>> GetKorisnik()
         {
-            return await _context.Korisnik.ToListAsync();
+            var lista = await _context.Korisnik.ToListAsync();
+            return Ok(_mapper.Map<List<Korisnik>, List<KorisnikGetDto>>(lista));
         }
 
         // GET: api/Korisnici/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Korisnik>> GetKorisnik(int id)
+        public async Task<ActionResult<KorisnikGetDto>> GetKorisnik(int id)
         {
             var korisnik = await _context.Korisnik.FindAsync(id);
-
             if (korisnik == null)
             {
                 return NotFound();
             }
-
-            return korisnik;
+            return Ok(_mapper.Map<KorisnikGetDto>(korisnik));
         }
 
         // PUT: api/Korisnici/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutKorisnik(int id, Korisnik korisnik)
+        public async Task<IActionResult> PutKorisnik(int id, KorisnikGetDto korisnik)
         {
             if (id != korisnik.KorisnikId)
             {
                 return BadRequest();
             }
-
             _context.Entry(korisnik).State = EntityState.Modified;
-
             try
             {
                 await _context.SaveChangesAsync();
@@ -69,18 +71,16 @@ namespace MoviesWebApi.Controllers
                     throw;
                 }
             }
-
             return NoContent();
         }
 
         // POST: api/Korisnici
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Korisnik>> PostKorisnik(Korisnik korisnik)
+        public async Task<ActionResult<KorisnikGetDto>> PostKorisnik(Korisnik korisnik)
         {
             _context.Korisnik.Add(korisnik);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetKorisnik", new { id = korisnik.KorisnikId }, korisnik);
         }
 
@@ -93,10 +93,8 @@ namespace MoviesWebApi.Controllers
             {
                 return NotFound();
             }
-
             _context.Korisnik.Remove(korisnik);
             await _context.SaveChangesAsync();
-
             return NoContent();
         }
 

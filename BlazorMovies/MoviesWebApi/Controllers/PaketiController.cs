@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
 {
@@ -15,31 +17,32 @@ namespace MoviesWebApi.Controllers
     public class PaketiController : ControllerBase
     {
         private readonly MoviesWebApiContext _context;
+        private readonly IMapper _mapper;
 
-        public PaketiController(MoviesWebApiContext context)
+        public PaketiController(MoviesWebApiContext context, IMapper mapper)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
         // GET: api/Paketi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Paket>>> GetPaket()
+        public async Task<ActionResult<IEnumerable<PaketGetDto>>> GetPaket()
         {
-            return await _context.Paket.ToListAsync();
+            var lista = await _context.Paket.ToListAsync();
+            return Ok(_mapper.Map<List<Paket>, List<PaketGetDto>>(lista));
         }
 
         // GET: api/Paketi/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Paket>> GetPaket(int id)
+        public async Task<ActionResult<PaketGetDto>> GetPaket(int id)
         {
             var paket = await _context.Paket.FindAsync(id);
-
             if (paket == null)
             {
                 return NotFound();
             }
-
-            return paket;
+            return Ok(_mapper.Map<PaketGetDto>(paket));
         }
 
         // PUT: api/Paketi/5
