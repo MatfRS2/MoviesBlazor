@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 
 namespace MoviesWebApi.Shared
 {
-    public class ResultT<TValue>: Result
+    public class Result<TValue>: Result
     {
         private readonly TValue _value; 
 
-        protected internal ResultT(TValue value, bool isSuccess, Error error):
+        protected internal Result(TValue value, bool isSuccess, Error error):
             base(isSuccess, error)
         {
             _value = value;
@@ -18,10 +18,15 @@ namespace MoviesWebApi.Shared
             _value :
             throw new InvalidOperationException("Ne može se pristupiti vrednosti rezultata kada operacija nije uspešna");
 
-        public static ResultT<TValue> Sucess(TValue value) => new(value, true, Error.None);
+        public static Result<TValue> Sucess(TValue value) => new(value, true, Error.None);
 
-        public static ResultT<TValue> Faliure(TValue? value, Error error) => new(value, false, error);
+        public static new Result<TValue> Faliure(Error error) => new(default(TValue), false, error);
 
+        public static implicit operator Result<TValue>(TValue? value) => Create(value);
 
+        private static Result<TValue> Create(TValue? value)
+        {
+            return Result<TValue>.Sucess(value);
+        }
     }
 }

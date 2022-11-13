@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Operations
@@ -17,29 +18,29 @@ namespace MoviesWebApi.Operations
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<ZanrDto>> SviZanrovi()
+        public async Task<Result<List<ZanrDto>>> SviZanrovi()
         {
             List<Zanr> zanrovi = await _context.Zanr.ToListAsync();
             List<ZanrDto> ret = _mapper.Map<List<ZanrDto>>(zanrovi);
             return ret;
         }
 
-        public async Task<ZanrDto> ZanrPoId(int id)
+        public async Task<Result<ZanrDto>> ZanrPoId(int id)
         {
             var zanr = await _context.Zanr.Where(z => z.ZanrId == id).SingleOrDefaultAsync();
             if (zanr == null)
             {
-                return new ZanrDto() { ZanrId = -1, Naziv = String.Empty};
+                return Result<ZanrDto>.Faliure(new Error("Error.NoData", "Nema zanra sa datim identifikatorom." ));
             }
             return _mapper.Map<ZanrDto>(zanr);
         }
 
 
-        public async Task<int> PostaviZanr(int id, ZanrDto zanrDto)
+        public async Task<Result> PostaviZanr(int id, ZanrDto zanrDto)
         {
             var zanr = await _context.Zanr.FindAsync(id);
             if (zanr == null)
-                return -1;
+                return Result.Faliure( new Error( "Error.InvalidId", "Nije korektan identifikator za Zanr." ) );
             _mapper.Map<ZanrDto, Zanr>(zanrDto, zanr);
             _context.Entry(zanr).State = EntityState.Modified;
             try
@@ -50,33 +51,36 @@ namespace MoviesWebApi.Operations
             {
                 if (!ZanrExists(id))
                 {
-                    return -1;
+                    return Result.Faliure( new Error("Error.ConcurencyPhantom", 
+                        "Greška zbog fantomskih podataka pri konkurentnom ažuriranju.") );
                 }
                 else
                 {
-                    throw;
+                    Result.Faliure(new Error("Error.ConcurencyUpdate",
+                        "Greška pri konkurentnom ažuriranju."));
                 }
             }
-            return 0;
+            return Result.Sucess();
         }
 
-        public async Task DodajZanr(ZanrDto zanrDto)
+        public async Task<Result> DodajZanr(ZanrDto zanrDto)
         {
             Zanr zanr = _mapper.Map<Zanr>(zanrDto);
             _context.Zanr.Add(zanr);
             await _context.SaveChangesAsync();
+            return Result.Sucess();
         }
 
-        public async Task<int> ObrisiZanrPoId(int id)
+        public async Task<Result> ObrisiZanrPoId(int id)
         {
             var zanr = await _context.Zanr.FindAsync(id);
             if (zanr == null)
             {
-                return -1;
+                return Result.Faliure(new Error("Error.NoData", "Nema zanra sa datim identifikatorom."));
             }
             _context.Zanr.Remove(zanr);
             await _context.SaveChangesAsync();
-            return 0;
+            return Result.Sucess();
         }
         private bool ZanrExists(int id)
         {
