@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MoviesWebApi.Data;
+using MoviesWebApi.Commands;
 using MoviesWebApi.Models;
 using MoviesWebApi.Operations;
 using MoviesWebApi.Shared;
@@ -17,11 +10,12 @@ namespace MoviesWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ZanroviController : ControllerBase
+    public class ZanroviController : ApiController
     {
         private readonly IZanroviOperations _operations;
 
-        public ZanroviController(IZanroviOperations operations)
+        public ZanroviController(IZanroviOperations operations, ISender sender)
+            :base(sender)
         {
             _operations = operations ?? throw new ArgumentNullException(nameof(operations));
         }
@@ -65,12 +59,13 @@ namespace MoviesWebApi.Controllers
         // POST: api/Zanrovi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto)
+        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto, CancellationToken cancelationToken )
         {
-            var res = await _operations.DodajZanr(zanrDto);
-            if (res.IsFaliure)
-                return NotFound(res.Error);
-            return CreatedAtAction("GetZanrovi", new { id = zanrDto.ZanrId }, zanrDto);
+            var command = new DodajZanrCommand(zanrDto.ZanrId, zanrDto.Naziv);
+            var res = await _sender.Send(command, cancelationToken);
+            if(res.IsFaliure)
+                return BadRequest(res.Error);
+            return Ok();
         }
 
         // DELETE: api/Zanrovi/5
