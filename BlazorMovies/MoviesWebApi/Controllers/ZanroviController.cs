@@ -18,9 +18,9 @@ namespace MoviesWebApi.Controllers
     [ApiController]
     public class ZanroviController : ControllerBase
     {
-        private readonly ZanroviOperations _operations;
+        private readonly IZanroviOperations _operations;
 
-        public ZanroviController(ZanroviOperations operations)
+        public ZanroviController(IZanroviOperations operations)
         {
             _operations = operations ?? throw new ArgumentNullException(nameof(operations));
         }
