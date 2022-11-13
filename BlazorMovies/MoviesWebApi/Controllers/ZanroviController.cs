@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.Operations;
 using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
@@ -17,21 +18,18 @@ namespace MoviesWebApi.Controllers
     [ApiController]
     public class ZanroviController : ControllerBase
     {
-        private readonly MoviesWebApiContext _context;
-        private readonly IMapper _mapper;
+        private readonly ZanroviOperations _operations;
 
-        public ZanroviController(MoviesWebApiContext context, IMapper mapper)
+        public ZanroviController(ZanroviOperations operations)
         {
-            _context = context ?? throw new ArgumentNullException(nameof(context));
-            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _operations = operations ?? throw new ArgumentNullException(nameof(operations));
         }
 
         // GET: api/Zanrovi
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi()
         {
-            List<Zanr> zanrovi = await _context.Zanr.ToListAsync();
-            List<ZanrDto> ret = _mapper.Map<List<ZanrDto>>(zanrovi);
+            List<ZanrDto> ret = await _operations.SviZanrovi();
             return Ok(ret);
         }
 
@@ -39,12 +37,10 @@ namespace MoviesWebApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<ZanrDto>> GetZanr(int id)
         {
-            var zanr = await _context.Zanr.Where(z=> z.ZanrId == id).SingleOrDefaultAsync();
-            if (zanr == null)
-            {
+            var zanr = await _operations.ZanrPoId(id);
+            if (zanr.ZanrId == -1 && zanr.Naziv == String.Empty)
                 return NotFound();
-            }
-            return _mapper.Map<ZanrDto>(zanr);
+            return Ok(zanr);
         }
 
         // PUT: api/Zanrovi/5
@@ -56,26 +52,9 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-            var zanr = await _context.Zanr.FindAsync(id);
-            if (zanr == null)
+            int ret = await _operations.PostaviZanr(id, zanrDto);
+            if (ret < 0)
                 return NotFound();
-            _mapper.Map<ZanrDto, Zanr>(zanrDto, zanr); 
-            _context.Entry(zanr).State = EntityState.Modified;
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ZanrExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
             return NoContent();
         }
 
@@ -84,30 +63,19 @@ namespace MoviesWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto)
         {
-            Zanr zanr = _mapper.Map<Zanr>(zanrDto);
-            _context.Zanr.Add(zanr);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction("GetZanrovi", new { id = zanr.ZanrId }, zanrDto);
+            await _operations.DodajZanr(zanrDto);
+            return CreatedAtAction("GetZanrovi", new { id = zanrDto.ZanrId }, zanrDto);
         }
 
         // DELETE: api/Zanrovi/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteZanr(int id)
         {
-            var zanr = await _context.Zanr.FindAsync(id);
-            if (zanr == null)
-            {
+            int ret = await _operations.ObrisiZanrPoId(id);
+            if (ret < 0)
                 return NotFound();
-            }
-            _context.Zanr.Remove(zanr);
-            await _context.SaveChangesAsync();
-
             return NoContent();
         }
 
-        private bool ZanrExists(int id)
-        {
-            return _context.Zanr.Any(e => e.ZanrId == id);
-        }
     }
 }
