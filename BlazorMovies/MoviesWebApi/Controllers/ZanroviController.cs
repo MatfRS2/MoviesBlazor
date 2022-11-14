@@ -2,7 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Models;
-using MoviesWebApi.Operations;
+using MoviesWebApi.Queries.VratiSveZanrove;
+using MoviesWebApi.Queries.VratiZanrPoId;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 using System.Threading;
@@ -13,33 +14,30 @@ namespace MoviesWebApi.Controllers
     [ApiController]
     public class ZanroviController : ApiController
     {
-        private readonly IZanroviOperations _operations;
 
-        public ZanroviController(IZanroviOperations operations, ISender sender)
+        public ZanroviController(ISender sender)
             :base(sender)
         {
-            _operations = operations ?? throw new ArgumentNullException(nameof(operations));
         }
 
         // GET: api/Zanrovi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi()
+        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi(CancellationToken cancelationToken)
         {
-            var res = await _operations.SviZanrovi();
-            if(!res.IsSucess)
-                return NotFound(res.Error);
+            var query = new VratiSveZanroveQuery();
+            Result<List<ZanrJedanResponse>> res = await _sender.Send(query, cancelationToken);
             return Ok(res.Value);
         }
 
         // GET: api/Zanrovi/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ZanrDto>> GetZanr(int id)
+        public async Task<ActionResult<ZanrDto>> GetZanr(int id, CancellationToken cancelationToken)
         {
-            var res = await _operations.ZanrPoId(id);
+            var query = new VratiZanrPoIdQuery(id);
+            Result<ZanrResponse> res = await _sender.Send(query, cancelationToken);
             if (!res.IsSucess)
                 return NotFound(res.Error);
-            var zanr = res.Value;
-            return Ok(zanr);
+            return Ok(res.Value);
         }
 
         // PUT: api/Zanrovi/5
