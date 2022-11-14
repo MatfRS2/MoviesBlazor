@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using MoviesWebApi.Commands;
+using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Data;
 using MoviesWebApi.Operations;
 using MoviesWebApi.Shared;

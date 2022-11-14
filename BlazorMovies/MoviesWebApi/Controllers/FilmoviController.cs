@@ -92,7 +92,6 @@ namespace MoviesWebApi.Controllers
             Film film = _mapper.Map<Film>(filmDto);
             _context.Film.Add(film);
             await _context.SaveChangesAsync();
-
             return CreatedAtAction("GetFilm", new { id = film.FilmId }, film);
         }
 

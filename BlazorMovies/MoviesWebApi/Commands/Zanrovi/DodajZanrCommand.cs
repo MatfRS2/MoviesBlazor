@@ -2,7 +2,7 @@
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Commands
+namespace MoviesWebApi.Commands.Zanrovi
 {
     public sealed record DodajZanrCommand(
             int ZanrId,

@@ -1,10 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using MoviesWebApi.Commands;
+using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Models;
 using MoviesWebApi.Operations;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
+using System.Threading;
 
 namespace MoviesWebApi.Controllers
 {
@@ -44,37 +45,39 @@ namespace MoviesWebApi.Controllers
         // PUT: api/Zanrovi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutZanr(int id, ZanrDto zanrDto)
+        public async Task<IActionResult> PutZanr(int id, ZanrDto zanrDto, CancellationToken cancelationToken)
         {
             if (id != zanrDto.ZanrId)
             {
                 return BadRequest();
             }
-            var res = await _operations.PostaviZanr(id, zanrDto);
+            var command = new PostaviZanrCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
+            var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
-                return NotFound(res.Error);
+                return BadRequest(res.Error);
             return NoContent();
         }
 
         // POST: api/Zanrovi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto, CancellationToken cancelationToken )
+        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto, CancellationToken cancelationToken)
         {
             var command = new DodajZanrCommand(zanrDto.ZanrId, zanrDto.Naziv);
             var res = await _sender.Send(command, cancelationToken);
             if(res.IsFaliure)
                 return BadRequest(res.Error);
-            return Ok();
+            return CreatedAtAction("GetZanr", new { id = zanrDto.ZanrId }, zanrDto);
         }
 
         // DELETE: api/Zanrovi/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteZanr(int id)
+        public async Task<IActionResult> DeleteZanr(int id, CancellationToken cancelationToken)
         {
-            var res = await _operations.ObrisiZanrPoId(id);
+            var command = new ObrisiZanrCommand(id);
+            var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
-                return NotFound(res.Error);
+                return BadRequest(res.Error);
             return NoContent();
         }
 
