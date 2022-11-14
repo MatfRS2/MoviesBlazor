@@ -1,7 +1,10 @@
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Data;
-using MoviesWebApi.Operations;
+using MoviesWebApi.Shared;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,8 +16,6 @@ builder.Services.AddDbContext<MoviesWebApiContext>(options => {
 
 // Add automapper capabilities 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-
-builder.Services.AddScoped<IZanroviOperations, ZanroviOperations>();    
 
 // Setup CORS rules
 string politikaSlobodanLokal = "slobodno_sve_u_lokalu";
@@ -30,11 +31,17 @@ builder.Services.AddCors(options =>
                       });
 });
 
+// Add MediatR capabilities
+builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+builder.Services.AddMediatR(typeof(DodajZanrCommandHandler).Assembly);
+builder.Services.AddMediatR(MoviesWebApi.Shared.AssemblyReference.Assembly);
+
 // Add services to the container
-builder.Services.AddControllers(options =>
-{
-    options.RespectBrowserAcceptHeader = true;
-});
+builder.Services
+    .AddControllers(options =>
+        {
+            options.RespectBrowserAcceptHeader = true;
+        });
 
 // Add Swagger/OpenAPI support
 builder.Services.AddEndpointsApiExplorer();
@@ -42,6 +49,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// Seed data, if necessary
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

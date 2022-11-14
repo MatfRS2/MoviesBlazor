@@ -1,85 +1,81 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Microsoft.AspNetCore.Http;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using MoviesWebApi.Data;
+using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Models;
-using MoviesWebApi.Operations;
+using MoviesWebApi.Queries.VratiSveZanrove;
+using MoviesWebApi.Queries.VratiZanrPoId;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
+using System.Threading;
 
 namespace MoviesWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ZanroviController : ControllerBase
+    public class ZanroviController : ApiController
     {
-        private readonly IZanroviOperations _operations;
 
-        public ZanroviController(IZanroviOperations operations)
+        public ZanroviController(ISender sender)
+            :base(sender)
         {
-            _operations = operations ?? throw new ArgumentNullException(nameof(operations));
         }
 
         // GET: api/Zanrovi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi()
+        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi(CancellationToken cancelationToken)
         {
-            var res = await _operations.SviZanrovi();
-            if(!res.IsSucess)
-                return NotFound(res.Error);
+            var query = new VratiSveZanroveQuery();
+            Result<List<ZanrJedanResponse>> res = await _sender.Send(query, cancelationToken);
             return Ok(res.Value);
         }
 
         // GET: api/Zanrovi/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<ZanrDto>> GetZanr(int id)
+        public async Task<ActionResult<ZanrDto>> GetZanr(int id, CancellationToken cancelationToken)
         {
-            var res = await _operations.ZanrPoId(id);
+            var query = new VratiZanrPoIdQuery(id);
+            Result<ZanrResponse> res = await _sender.Send(query, cancelationToken);
             if (!res.IsSucess)
                 return NotFound(res.Error);
-            var zanr = res.Value;
-            return Ok(zanr);
+            return Ok(res.Value);
         }
 
         // PUT: api/Zanrovi/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutZanr(int id, ZanrDto zanrDto)
+        public async Task<IActionResult> PutZanr(int id, ZanrDto zanrDto, CancellationToken cancelationToken)
         {
             if (id != zanrDto.ZanrId)
             {
                 return BadRequest();
             }
-            var res = await _operations.PostaviZanr(id, zanrDto);
+            var command = new PostaviZanrCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
+            var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
-                return NotFound(res.Error);
+                return BadRequest(res.Error);
             return NoContent();
         }
 
         // POST: api/Zanrovi
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
-        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto)
+        public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto, CancellationToken cancelationToken)
         {
-            var res = await _operations.DodajZanr(zanrDto);
-            if (res.IsFaliure)
-                return NotFound(res.Error);
-            return CreatedAtAction("GetZanrovi", new { id = zanrDto.ZanrId }, zanrDto);
+            var command = new DodajZanrCommand(zanrDto.ZanrId, zanrDto.Naziv);
+            var res = await _sender.Send(command, cancelationToken);
+            if(res.IsFaliure)
+                return BadRequest(res.Error);
+            return CreatedAtAction("GetZanr", new { id = zanrDto.ZanrId }, zanrDto);
         }
 
         // DELETE: api/Zanrovi/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteZanr(int id)
+        public async Task<IActionResult> DeleteZanr(int id, CancellationToken cancelationToken)
         {
-            var res = await _operations.ObrisiZanrPoId(id);
+            var command = new ObrisiZanrCommand(id);
+            var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
-                return NotFound(res.Error);
+                return BadRequest(res.Error);
             return NoContent();
         }
 
