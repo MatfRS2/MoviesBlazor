@@ -1,4 +1,5 @@
 using MediatR;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using MoviesWebApi.Commands.Zanrovi;
@@ -8,11 +9,22 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// read dbProvider
+var dbProvider = builder.Configuration["DbProvider"];
 // Add database context
-builder.Services.AddDbContext<MoviesWebApiContext>(options => {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContext") 
-        ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContext' not found."));
+if (dbProvider == "MsSql")
+    builder.Services.AddDbContext<MoviesWebApiContext>(options =>
+    {
+        options.UseSqlServer(builder.Configuration.GetConnectionString("MoviesWebApiContextMsSql")
+            ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContextMsSql' not found."));
     });
+else if (dbProvider == "MySql")
+    builder.Services.AddDbContext<MoviesWebApiContext>(options =>
+        options.UseMySQL(builder.Configuration.GetConnectionString("MoviesWebApiContextMySql")
+            ?? throw new InvalidOperationException("Connection string 'MoviesWebApiContextMySql' not found.")));
+else
+    throw new InvalidOperationException("Invalid Database provider");
+
 
 // Add automapper capabilities 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
