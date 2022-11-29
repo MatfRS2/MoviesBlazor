@@ -1,4 +1,6 @@
-﻿CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (
+﻿use movieswebapidata;
+
+CREATE TABLE IF NOT EXISTS `__EFMigrationsHistory` (
     `MigrationId` varchar(150) NOT NULL,
     `ProductVersion` varchar(32) NOT NULL,
     PRIMARY KEY (`MigrationId`)
@@ -8,9 +10,9 @@ START TRANSACTION;
 
 CREATE TABLE `Film` (
     `Id` int NOT NULL,
-    `Naslov` nvarchar(max) NULL,
-    `DatumPocetkaPrikazivanja` datetime2 NOT NULL,
-    `Zanr` nvarchar(max) NULL,
+    `Naslov` nvarchar(255) NULL,
+    `DatumPocetkaPrikazivanja` datetime NOT NULL,
+    `Zanr` nvarchar(255) NULL,
     `Ulozeno` decimal(18,2) NOT NULL,
     PRIMARY KEY (`Id`)
 );
@@ -24,7 +26,7 @@ START TRANSACTION;
 
 ALTER TABLE `Film` DROP COLUMN `Zanr`;
 
-ALTER TABLE `Film` MODIFY `Ulozeno` money NOT NULL;
+ALTER TABLE `Film` MODIFY `Ulozeno` decimal NOT NULL;
 
 ALTER TABLE `Film` MODIFY `Naslov` nvarchar(250) NOT NULL DEFAULT '';
 
@@ -58,8 +60,8 @@ START TRANSACTION;
 
 CREATE TABLE `Paket` (
     `Id` int NOT NULL,
-    `Naziv` nvarchar(max) NOT NULL,
-    `Opis` nvarchar(max) NOT NULL,
+    `Naziv` nvarchar(255) NOT NULL,
+    `Opis` nvarchar(255) NOT NULL,
     `DatumFormiranja` date NOT NULL,
     PRIMARY KEY (`Id`)
 );
@@ -97,14 +99,14 @@ CREATE TABLE `Korisnik` (
     `Email` nvarchar(250) NOT NULL,
     `Ime` nvarchar(150) NOT NULL,
     `Prezime` nvarchar(150) NOT NULL,
-    `Potroseno` money NOT NULL,
+    `Potroseno` decimal NOT NULL,
     PRIMARY KEY (`Id`)
 );
 
 CREATE TABLE `Pretplata` (
     `Id` int NOT NULL,
-    `Status` nvarchar(max) NOT NULL,
-    `Iznos` money NOT NULL,
+    `Status` nvarchar(255) NOT NULL,
+    `Iznos` decimal NOT NULL,
     `DatumIsteka` date NOT NULL,
     `KorisnikId` int NOT NULL,
     `PaketId` int NOT NULL,
