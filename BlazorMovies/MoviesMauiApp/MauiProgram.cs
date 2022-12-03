@@ -24,7 +24,11 @@ namespace MoviesMauiApp
             builder.Services.AddSingleton<WeatherForecastService>();
 
             builder.Services.AddScoped<IFilmoviService, FilmoviService>();
+            builder.Services.AddScoped<IZanroviService, ZanroviService>();
+
             builder.Services.AddScoped<IOsvezenjeService, OsvezenjeService>();
+
+            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
             return builder.Build();
         }

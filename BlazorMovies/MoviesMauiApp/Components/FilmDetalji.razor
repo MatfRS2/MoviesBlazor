@@ -2,6 +2,7 @@
 @using MoviesMauiApp.ViewModels
 @using MoviesMauiApp.Services
 
+@inject IZanroviService zanroviService
 @inject IFilmoviService filmoviService
 @inject IOsvezenjeService osvezenjeService
 
@@ -14,7 +15,7 @@
         <table>
             <tr>
                 <td><span>Id: </span></td>
-                <td>@IzabraniFilm.Id</td>
+                <td>@IzabraniFilm.FilmId</td>
             </tr>
             <tr>
                 <td><span>Naslov: </span></td>
@@ -22,7 +23,7 @@
             </tr>
             <tr>
                 <td><span>Žanr: </span></td>
-                <td>@IzabraniFilm.Zanr</td>
+                <td>@IzabraniFilm.Zanr.Naziv</td>
             </tr>
             <tr>
                 <td><span>Uloženo: </span></td>
@@ -54,7 +55,13 @@
                     <label> Žanr: </label>
                 </td>
                 <td>
-                    <input @bind="IzabraniFilm.Zanr" placeholder="Zanr">
+                    <select @bind="IzabraniFilm.ZanrId">
+                        @foreach (var zanr in zanrovi)
+                        {
+                            <option value="@zanr.ZanrId"> @zanr.Naziv </option>
+                        }
+                    </select>
+
                 </td>
             </tr>
             <tr>
@@ -82,9 +89,11 @@
 
 @code
 {
-    private FilmUpdateDTO izabraniFilm = null;
+    private List<Zanr> zanrovi;
 
-    private FilmUpdateDTO IzabraniFilm
+    private FilmGetDto izabraniFilm = null;
+
+    private FilmGetDto IzabraniFilm
     {
         get => izabraniFilm;
         set
@@ -117,17 +126,11 @@
 
     private async Task OdrediPodatke()
     {
+        zanrovi = await zanroviService.GetZanroviAsync();
         if (filmId > 0)
         {
-            Film item = await filmoviService.GetFilmAsync(filmId);
-            izabraniFilm = new FilmUpdateDTO()
-                {
-                    Id = item.Id,
-                    Naslov = item.Naslov,
-                    Zanr = item.Zanr,
-                    DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
-                    Ulozeno = item.Ulozeno
-                };
+            FilmGetDto item = await filmoviService.GetFilmAsync(filmId);
+            izabraniFilm = item;
         }
     }
 
@@ -149,7 +152,15 @@
     private async Task Sacuvaj()
     {
         AktivniMod = Mod.Pregled;
-        int ret = await filmoviService.Update(IzabraniFilm);
+        FilmUpdateDto item = new FilmUpdateDto()
+            {
+                FilmId = IzabraniFilm.FilmId,
+                DatumPocetkaPrikazivanja = IzabraniFilm.DatumPocetkaPrikazivanja,
+                Naslov = IzabraniFilm.Naslov,
+                Ulozeno = IzabraniFilm.Ulozeno,
+                ZanrId = IzabraniFilm.ZanrId
+            };
+        int ret = await filmoviService.Update(item);
         IzabraniFilm = null;
         osvezenjeService.ZahtevajOsvezenje();
         if (ret != 0)

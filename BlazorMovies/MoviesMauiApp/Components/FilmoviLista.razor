@@ -2,6 +2,7 @@
 @using MoviesMauiApp.ViewModels
 @using MoviesMauiApp.Services
 
+@inject IZanroviService zanroviService
 @inject IFilmoviService filmoviService
 @inject IOsvezenjeService osvezenjeService
 
@@ -19,42 +20,51 @@ else
             <tr>
                 <th>
                     <label>
-                        Naslov:
+                        Naslov
                         <div hidden="@(AktivniMod==Mod.Pregled)">
-                            <br /><input @bind="filmAddDTO.Naslov" />
+                            <br /><input @bind="filmAddDto.Naslov" />
                         </div>
                     </label>
                 </th>
                 <th>
                     <label>
-                        Početak prikazivanja:
+                        Početak prikazivanja
                         <div hidden="@(AktivniMod==Mod.Pregled)">
-                            <br /><input @bind="filmAddDTO.DatumPocetkaPrikazivanja"
+                            <br /><input @bind="filmAddDto.DatumPocetkaPrikazivanja"
                                      @bind:format="@FormatDatuma" />
                         </div>
                     </label>
                 </th>
                 <th>
                     <label>
-                        Žanr:
+                        Žanr
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br />
-                            <input @bind="filmAddDTO.Zanr" />
+                            <select @bind="filmAddDto.ZanrId">
+                                @foreach (var zanr in zanrovi)
+                                {
+                                    <option value="@zanr.ZanrId"> @zanr.Naziv </option>
+                                }
+                            </select>
                         </div>
                     </label>
                 </th>
                 <th>
                     <label>
-                        Uloženo:
+                        Uloženo
                         <div hidden="@(AktivniMod==Mod.Pregled)">
                             <br />
-                            <input type="number" @bind="filmAddDTO.Ulozeno" />
-                            <button @onclick="Dodaj"> Dodaj</button>
-                            <button @onclick="OtkaziKreiranje"> Otkaži</button>
+                            <input type="number" @bind="filmAddDto.Ulozeno" />
                         </div>
                     </label>
                 </th>
-                <th></th>
+                <th>
+                    <div hidden="@(AktivniMod==Mod.Pregled)">
+                        <button @onclick="Dodaj"> Dodaj</button>
+                        <button @onclick="OtkaziKreiranje"> Otkaži</button>
+                    </div>
+
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -68,14 +78,14 @@ else
                         @item.DatumPocetkaPrikazivanja.ToString("dd.MM.yyyy")
                     </td>
                     <td>
-                        @item.Zanr
+                        @item.Zanr.Naziv
                     </td>
                     <td>
                         @item.Ulozeno
                     </td>
                     <td>
-                        <button class="select" @onclick="@(()=>Izaberi(item.Id))">Izaberi</button>
-                        <button class="delete" @onclick="@(()=>Obrisi(item.Id))">Obriši</button>
+                        <button class="select" @onclick="@(()=>Izaberi(item.FilmId))">Izaberi</button>
+                        <button class="delete" @onclick="@(()=>Obrisi(item.FilmId))">Obriši</button>
                     </td>
                 </tr>
             }
@@ -84,13 +94,14 @@ else
 }
 
 @code {
-    private List<Film> filmovi;
+    private List<Zanr> zanrovi;
+    private List<FilmGetDto> filmovi;
 
-    private FilmAddDTO filmAddDTO = new FilmAddDTO()
+    private FilmAddDto filmAddDto = new FilmAddDto()
         {
             Naslov = "",
             DatumPocetkaPrikazivanja = DateTime.Today,
-            Zanr = "",
+            ZanrId = -1,
             Ulozeno = 1M
         };
 
@@ -111,6 +122,7 @@ else
     {
         osvezenjeService.OsvezenjeJeZahtevano += OsveziKomponentu;
 
+        zanrovi = await zanroviService.GetZanroviAsync();
         filmovi = await filmoviService.GetFilmsAsync();
     }
 
@@ -122,7 +134,7 @@ else
     private async Task Dodaj()
     {
         AktivniMod = Mod.Pregled;
-        int ret = await filmoviService.Add(filmAddDTO);
+        int ret = await filmoviService.Add(filmAddDto);
         if (ret == 0)
             filmovi = await filmoviService.GetFilmsAsync();
         else

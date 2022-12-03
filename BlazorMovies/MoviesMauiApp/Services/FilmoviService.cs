@@ -12,26 +12,28 @@ using global::MoviesMauiApp.Models;
 using System.Text.Json;
 using MoviesMauiApp.ViewModels;
 using System.Text;
+using AutoMapper;
 
 namespace MoviesMauiApp.Services
 {
     public class FilmoviService : IFilmoviService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMapper _mapper;
 
-        public FilmoviService(HttpClient httpClient)
+        public FilmoviService(HttpClient httpClient, IMapper mapper)
         {
-            _httpClient = httpClient ?? throw new ArgumentNullException(
-                nameof(httpClient));
+            _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
             _httpClient.BaseAddress = new Uri("https://localhost:7250");
             // using Microsoft.Net.Http.Headers;
             _httpClient.DefaultRequestHeaders.Add(
                 "Accept", "application/vnd.github.v3+json");
             _httpClient.DefaultRequestHeaders.Add(
-                "UserAgent", "HttpRequestsSample");
+                "User-Agent", "HttpRequestsSample");
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<List<Film>> GetFilmsAsync()
+        public async Task<List<FilmGetDto>> GetFilmsAsync()
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
@@ -45,30 +47,22 @@ namespace MoviesMauiApp.Services
                     WriteIndented = true
                 };
                 var films = await JsonSerializer.DeserializeAsync(responseStream,
-                    typeof(List<Film>), options);
+                    typeof(List<FilmGetDto>), options);
                 if(films!=null)
-                    return (List<Film>)films;
-                return new List<Film>();
+                    return (List<FilmGetDto>)films;
+                return new List<FilmGetDto>();
             }
             else
             {
                 throw new Exception(this.GetType().Name + "::GetFilmsAsync():" + response.Content.ToString());
             }
         }
-        public async Task<int> Add(FilmAddDTO item)
+        public async Task<int> Add(FilmAddDto item)
         {
-            item.Id = 0;
+            item.FilmId = 0;
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Filmovi");
             request.Headers.Add("Accept", "application/json");
-            request.Content = JsonContent.Create(new Film()
-            {
-                Id = item.Id,
-                Naslov = item.Naslov,
-                Zanr = item.Zanr,
-                DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
-                Ulozeno = item.Ulozeno,
-            });
-
+            request.Content = JsonContent.Create(_mapper.Map<Film>(item));
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -80,11 +74,10 @@ namespace MoviesMauiApp.Services
             }
         }
 
-        public async Task<Film> GetFilmAsync(int id)
+        public async Task<FilmGetDto> GetFilmAsync(int id)
         {
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Filmovi/" + id.ToString());
             request.Headers.Add("Accept", "application/json");
-
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
@@ -94,11 +87,11 @@ namespace MoviesMauiApp.Services
                     WriteIndented = true
                 };
                 var film = await JsonSerializer.DeserializeAsync(responseStream,
-                    typeof(Film), options);
+                    typeof(FilmGetDto), options);
                 if (film != null)
-                    return (Film)film;
+                    return (FilmGetDto)film;
                 else
-                    return new Film() {Id = -1};
+                    return new FilmGetDto() {FilmId = -1};
             }
             else
             {
@@ -106,20 +99,12 @@ namespace MoviesMauiApp.Services
             }
         }
 
-        public async Task<int> Update(FilmUpdateDTO item)
+        public async Task<int> Update(FilmUpdateDto item)
         {
-            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Filmovi/" + item.Id.ToString());
+            var request = new HttpRequestMessage(HttpMethod.Put, "/api/Filmovi/" + item.FilmId.ToString());
             request.Headers.Add("Accept", "application/json");
-            request.Content = new StringContent(JsonSerializer.Serialize(
-                new Film()
-                {
-                    Id = item.Id,
-                    Naslov = item.Naslov,
-                    Zanr = item.Zanr,
-                    DatumPocetkaPrikazivanja = item.DatumPocetkaPrikazivanja,
-                    Ulozeno = item.Ulozeno
-                }),
-                Encoding.UTF8, "application/json");
+            Film film = _mapper.Map<Film>(item);
+            request.Content = new StringContent(JsonSerializer.Serialize(film),Encoding.UTF8, "application/json");
             var response = await _httpClient.SendAsync(request);
             if (response.IsSuccessStatusCode)
             {
