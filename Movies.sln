@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesWebApi", "BlazorMovie
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorMoviesApp", "BlazorMovies\BlazorMoviesApp\BlazorMoviesApp.csproj", "{148DB6E5-23D9-458A-9F71-750EAF233A03}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesMauiApp", "BlazorMovies\MoviesMauiApp\MoviesMauiApp.csproj", "{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiMoviesApp", "BlazorMovies\MoviesMauiApp\MauiMoviesApp.csproj", "{4E60B3D5-BAAD-4DA9-9D63-09D7DF3AD0B8}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MoviesRazorClassLibrary", "BlazorMovies\MoviesRazorClassLibrary\MoviesRazorClassLibrary.csproj", "{A774D12E-C703-4AB9-870D-CDCD562BD830}"
 EndProject
