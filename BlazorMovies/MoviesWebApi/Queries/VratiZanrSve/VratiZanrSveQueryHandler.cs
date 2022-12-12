@@ -5,28 +5,28 @@ using MoviesWebApi.Models;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Queries.VratiSveZanrove
+namespace MoviesWebApi.Queries.VratiZanrSve
 {
-    internal sealed class VratiSveZanroveQueryHandler :
-        IQueryHandler<VratiSveZanroveQuery,List<ZanrJedanResponse>>
+    internal sealed class VratiZanrSveQueryHandler :
+        IQueryHandler<VratiZanrSveQuery,List<ZanrResponse>>
     {
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public VratiSveZanroveQueryHandler(MoviesWebApiContext context, IMapper mapper)
+        public VratiZanrSveQueryHandler(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<Result<List<ZanrJedanResponse>>> Handle(VratiSveZanroveQuery request,
+        public async Task<Result<List<ZanrResponse>>> Handle(VratiZanrSveQuery request,
             CancellationToken cancellationToken)
         {
             List<Zanr> zanrovi = await _context.Zanr.ToListAsync(cancellationToken);
-            List<ZanrJedanResponse> ret = new List<ZanrJedanResponse>();
+            List<ZanrResponse> ret = new List<ZanrResponse>();
             foreach(var z in zanrovi)
-                ret.Add(new ZanrJedanResponse(z.ZanrId, z.Naziv));
-            return Result<List<ZanrJedanResponse>>.Sucess(ret);
+                ret.Add(new ZanrResponse(z.ZanrId, z.Naziv));
+            return Result<List<ZanrResponse>>.Sucess(ret);
         }
 
     }

@@ -7,7 +7,7 @@ using MoviesWebApi.ViewModels;
 namespace MoviesWebApi.Queries.VratiZanrPoId
 {
     internal sealed class VratiSveZanroveQueryHandler :
-        IQueryHandler<VratiZanrPoIdQuery, ZanrResponse>
+        IQueryHandler<VratiZanrPoIdQuery, KorisnikResponse>
     {
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
@@ -18,16 +18,16 @@ namespace MoviesWebApi.Queries.VratiZanrPoId
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        public async Task<Result<ZanrResponse>> Handle(VratiZanrPoIdQuery request, 
+        public async Task<Result<KorisnikResponse>> Handle(VratiZanrPoIdQuery request, 
             CancellationToken cancellationToken)
         {
             var zanr = await _context.Zanr.Where(z => z.ZanrId == request.ZanrId).SingleOrDefaultAsync();
             if (zanr is null)
             {
-                return Result<ZanrResponse>.Faliure(new Error("Error.NoData", 
+                return Result<KorisnikResponse>.Faliure(new Error("Error.NoData", 
                     $"Nema zanra sa identifikatorom {request.ZanrId}."));
             }
-            var resp = new ZanrResponse(request.ZanrId, zanr.Naziv);
+            var resp = new KorisnikResponse(request.ZanrId, zanr.Naziv);
             return resp;
         }
     }

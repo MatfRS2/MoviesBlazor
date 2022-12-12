@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using MoviesWebApi.Commands.Zanrovi;
 using MoviesWebApi.Models;
-using MoviesWebApi.Queries.VratiSveZanrove;
+using MoviesWebApi.Queries.VratiZanrSve;
 using MoviesWebApi.Queries.VratiZanrPoId;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
@@ -22,10 +22,10 @@ namespace MoviesWebApi.Controllers
 
         // GET: api/Zanrovi
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanrovi(CancellationToken cancelationToken)
+        public async Task<ActionResult<IEnumerable<ZanrDto>>> GetZanr(CancellationToken cancelationToken)
         {
-            var query = new VratiSveZanroveQuery();
-            Result<List<ZanrJedanResponse>> res = await _sender.Send(query, cancelationToken);
+            var query = new VratiZanrSveQuery();
+            Result<List<Queries.VratiZanrSve.ZanrResponse>> res = await _sender.Send(query, cancelationToken);
             return Ok(res.Value);
         }
 
@@ -34,7 +34,7 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<ZanrDto>> GetZanr(int id, CancellationToken cancelationToken)
         {
             var query = new VratiZanrPoIdQuery(id);
-            Result<ZanrResponse> res = await _sender.Send(query, cancelationToken);
+            Result<Queries.VratiZanrPoId.KorisnikResponse> res = await _sender.Send(query, cancelationToken);
             if (!res.IsSucess)
                 return NotFound(res.Error);
             return Ok(res.Value);

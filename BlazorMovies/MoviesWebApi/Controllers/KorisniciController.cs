@@ -2,25 +2,30 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
+using MoviesWebApi.Queries.VratiKorisnikSve;
+using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class KorisniciController : ControllerBase
+    public class KorisniciController : ApiController
     {
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public KorisniciController(MoviesWebApiContext context, IMapper mapper)
+        public KorisniciController(ISender sender, MoviesWebApiContext context, IMapper mapper)
+            : base(sender)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -28,10 +33,11 @@ namespace MoviesWebApi.Controllers
 
         // GET: api/Korisnici
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<KorisnikGetDto>>> GetKorisnik()
+        public async Task<ActionResult<IEnumerable<KorisnikGetDto>>> GetKorisnik(CancellationToken cancelationToken)
         {
-            var lista = await _context.Korisnik.ToListAsync();
-            return Ok(_mapper.Map<List<Korisnik>, List<KorisnikGetDto>>(lista));
+            var query = new VratiKorisnikSveQuery();
+            Result<List<Queries.VratiKorisnikSve.KorisnikResponse>> res = await _sender.Send(query, cancelationToken);
+            return Ok(res.Value);
         }
 
         // GET: api/Korisnici/5
