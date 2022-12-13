@@ -6,36 +6,39 @@ using MoviesWebApi.Models;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Commands.Zanrovi
+namespace MoviesWebApi.Commands.Korisnici
 {
-    internal sealed class PostaviZanrCommandHandler : ICommandHandler<PostaviZanrCommand>
+    internal sealed class KorisnikPostaviCommandHandler : ICommandHandler<KorisnikPostaviCommand>
     {
 
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public PostaviZanrCommandHandler(MoviesWebApiContext context, IMapper mapper)
+        public KorisnikPostaviCommandHandler(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<PostaviZanrCommand, Result>.Handle(PostaviZanrCommand request,
+        async Task<Result> IRequestHandler<KorisnikPostaviCommand, Result>.Handle(KorisnikPostaviCommand request,
             CancellationToken cancellationToken)
         {
-            var zanr = await _context.Zanr.FindAsync(request.Id);
-            if (zanr == null)
-                return Result.Faliure(new Error("Error.InvalidId", "Nije korektan identifikator za Zanr."));
-            zanr.ZanrId = request.ZanrId;
-            zanr.Naziv = request.ZanrNaziv;
-            _context.Entry(zanr).State = EntityState.Modified;
+            var resultOne = await _context.Korisnik.FindAsync(request.Id);
+            if (resultOne == null)
+                return Result.Faliure(new Error("Error.InvalidId", "Nije korektan identifikator za Korisnik."));
+            resultOne.KorisnikId = request.KorisnikId;
+            resultOne.Email = request.EMail;
+            resultOne.Ime = request.Ime;
+            resultOne.Prezime = request.Prezime;
+            resultOne.Potroseno = request.Potorseno;
+            _context.Entry(resultOne).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync(cancellationToken);
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!ZanrExists(request.Id))
+                if (!KorisnikExists(request.Id))
                 {
                     return Result.Faliure(new Error("Error.ConcurencyPhantom",
                         "Greška zbog fantomskih podataka pri konkurentnom ažuriranju."));
@@ -50,9 +53,9 @@ namespace MoviesWebApi.Commands.Zanrovi
 
         }
 
-        private bool ZanrExists(int id)
+        private bool KorisnikExists(int id)
         {
-            return _context.Zanr.Any(e => e.ZanrId == id);
+            return _context.Korisnik.Any(e => e.KorisnikId == id);
         }
     }
 }

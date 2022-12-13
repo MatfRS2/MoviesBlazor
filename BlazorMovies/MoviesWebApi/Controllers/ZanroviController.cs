@@ -34,7 +34,7 @@ namespace MoviesWebApi.Controllers
         public async Task<ActionResult<ZanrDto>> GetZanr(int id, CancellationToken cancelationToken)
         {
             var query = new VratiZanrPoIdQuery(id);
-            Result<Queries.VratiZanrPoId.KorisnikResponse> res = await _sender.Send(query, cancelationToken);
+            Result<Queries.VratiZanrPoId.ZanrResponse> res = await _sender.Send(query, cancelationToken);
             if (!res.IsSucess)
                 return NotFound(res.Error);
             return Ok(res.Value);
@@ -49,7 +49,7 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-            var command = new PostaviZanrCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
+            var command = new ZanPostavirCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
             var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
                 return BadRequest(res.Error);
@@ -61,7 +61,7 @@ namespace MoviesWebApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Zanr>> PostZanr(ZanrDto zanrDto, CancellationToken cancelationToken)
         {
-            var command = new DodajZanrCommand(zanrDto.ZanrId, zanrDto.Naziv);
+            var command = new ZanrDodajCommand(zanrDto.ZanrId, zanrDto.Naziv);
             var res = await _sender.Send(command, cancelationToken);
             if(res.IsFaliure)
                 return BadRequest(res.Error);
@@ -72,7 +72,7 @@ namespace MoviesWebApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteZanr(int id, CancellationToken cancelationToken)
         {
-            var command = new ObrisiZanrCommand(id);
+            var command = new ZanrObrisiCommand(id);
             var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
                 return BadRequest(res.Error);

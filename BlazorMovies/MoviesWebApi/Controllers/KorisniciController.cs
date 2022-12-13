@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using MoviesWebApi.Data;
 using MoviesWebApi.Models;
 using MoviesWebApi.Queries.VratiKorisnikSve;
+using MoviesWebApi.Queries.VratiKorisnikPoId;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
@@ -42,14 +43,13 @@ namespace MoviesWebApi.Controllers
 
         // GET: api/Korisnici/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<KorisnikGetDto>> GetKorisnik(int id)
+        public async Task<ActionResult<KorisnikGetDto>> GetKorisnik(int id, CancellationToken cancelationToken)
         {
-            var korisnik = await _context.Korisnik.FindAsync(id);
-            if (korisnik == null)
-            {
-                return NotFound();
-            }
-            return Ok(_mapper.Map<KorisnikGetDto>(korisnik));
+            var query = new VratiKorisnikPoIdQuery(id);
+            Result<Queries.VratiKorisnikPoId.KorisnikResponse> res = await _sender.Send(query, cancelationToken);
+            if (!res.IsSucess)
+                return NotFound(res.Error);
+            return Ok(res.Value);
         }
 
         // PUT: api/Korisnici/5

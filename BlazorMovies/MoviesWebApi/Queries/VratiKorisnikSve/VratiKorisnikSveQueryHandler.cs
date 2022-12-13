@@ -23,10 +23,8 @@ namespace MoviesWebApi.Queries.VratiKorisnikSve
             CancellationToken cancellationToken)
         {
             List<Korisnik> resultList = await _context.Korisnik.ToListAsync(cancellationToken);
-            List<KorisnikResponse> ret = new List<KorisnikResponse>();
-            foreach(var r in resultList)
-                ret.Add(new KorisnikResponse(r.KorisnikId, r.Email, r.Ime, r.Prezime, r.Potroseno));
-            return Result<List<KorisnikResponse>>.Sucess(ret);
+            List<KorisnikResponse> ret = _mapper.Map<List<Korisnik>, List<KorisnikResponse>>(resultList);
+            return ret;
         }
 
     }

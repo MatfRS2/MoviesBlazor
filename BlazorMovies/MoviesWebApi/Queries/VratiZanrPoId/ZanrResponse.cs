@@ -1,5 +1,5 @@
 ﻿using MoviesWebApi.Shared;
 
 namespace MoviesWebApi.Queries.VratiZanrPoId
-{    public sealed record KorisnikResponse(int ZanrId, string Naziv);
+{    public sealed record ZanrResponse(int ZanrId, string Naziv);
 }
