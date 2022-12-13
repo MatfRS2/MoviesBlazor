@@ -45,7 +45,7 @@ builder.Services.AddCors(options =>
 
 // Add MediatR capabilities
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
-builder.Services.AddMediatR(typeof(DodajZanrCommandHandler).Assembly);
+builder.Services.AddMediatR(typeof(ZanrDodajCommandHandler).Assembly);
 builder.Services.AddMediatR(MoviesWebApi.Shared.AssemblyReference.Assembly);
 
 // Add services to the container

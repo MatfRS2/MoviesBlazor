@@ -7,27 +7,27 @@ using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Commands.Zanrovi
 {
-    internal sealed class DodajZanrCommandHandler : ICommandHandler<DodajZanrCommand>
+    internal sealed class ZanrDodajCommandHandler : ICommandHandler<ZanrDodajCommand>
     {
 
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public DodajZanrCommandHandler(MoviesWebApiContext context, IMapper mapper)
+        public ZanrDodajCommandHandler(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<DodajZanrCommand, Result>.Handle(DodajZanrCommand request,
+        async Task<Result> IRequestHandler<ZanrDodajCommand, Result>.Handle(ZanrDodajCommand request,
             CancellationToken cancellationToken)
         {
-            var zanr = new Zanr()
+            var newObj = new Zanr()
             {
                 ZanrId = request.ZanrId,
                 Naziv = request.ZanrNaziv,
             };
-            _context.Zanr.Add(zanr);
+            _context.Zanr.Add(newObj);
             await _context.SaveChangesAsync(cancellationToken);
             return Result.Sucess();
         }

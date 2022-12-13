@@ -2,9 +2,9 @@
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Commands.Zanrovi
+namespace MoviesWebApi.Commands.Korisnici
 {
-    public sealed record ObrisiZanrCommand(
+    public sealed record KorisnikObrisiCommand(
             int Id
         ) : ICommand;
 

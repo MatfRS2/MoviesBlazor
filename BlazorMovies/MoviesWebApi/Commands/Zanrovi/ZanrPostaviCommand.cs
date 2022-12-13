@@ -4,7 +4,7 @@ using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Commands.Zanrovi
 {
-    public sealed record PostaviZanrCommand(
+    public sealed record ZanrPostaviCommand(
             int Id,
             int ZanrId,
             string ZanrNaziv

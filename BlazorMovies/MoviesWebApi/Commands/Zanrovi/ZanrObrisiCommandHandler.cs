@@ -7,27 +7,27 @@ using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Commands.Zanrovi
 {
-    internal sealed class ObrisiZanrCommandHandler : ICommandHandler<ObrisiZanrCommand>
+    internal sealed class ZanrObrisiCommandHandler : ICommandHandler<ZanrObrisiCommand>
     {
 
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public ObrisiZanrCommandHandler(MoviesWebApiContext context, IMapper mapper)
+        public ZanrObrisiCommandHandler(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<ObrisiZanrCommand, Result>.Handle(ObrisiZanrCommand request,
+        async Task<Result> IRequestHandler<ZanrObrisiCommand, Result>.Handle(ZanrObrisiCommand request,
             CancellationToken cancellationToken)
         {
-            var zanr = await _context.Zanr.FindAsync(request.Id);
-            if (zanr == null)
+            var foundObj = await _context.Zanr.FindAsync(request.Id);
+            if (foundObj == null)
             {
                 return Result.Faliure(new Error("Error.NoData", "Nema zanra sa datim identifikatorom."));
             }
-            _context.Zanr.Remove(zanr);
+            _context.Zanr.Remove(foundObj);
             await _context.SaveChangesAsync(cancellationToken);
             return Result.Sucess();
         }
