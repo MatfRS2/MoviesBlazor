@@ -21,14 +21,13 @@ namespace MoviesWebApi.Queries.VratiZanrPoId
         public async Task<Result<ZanrResponse>> Handle(VratiZanrPoIdQuery request, 
             CancellationToken cancellationToken)
         {
-            var zanr = await _context.Zanr.Where(z => z.ZanrId == request.ZanrId).SingleOrDefaultAsync();
-            if (zanr is null)
+            var resultSingle = await _context.Zanr.Where(z => z.ZanrId == request.ZanrId).SingleOrDefaultAsync();
+            if (resultSingle is null)
             {
                 return Result<ZanrResponse>.Faliure(new Error("Error.NoData", 
                     $"Nema zanra sa identifikatorom {request.ZanrId}."));
             }
-            var resp = new ZanrResponse(request.ZanrId, zanr.Naziv);
-            return resp;
+            return _mapper.Map<ZanrResponse>(resultSingle);
         }
     }
 }

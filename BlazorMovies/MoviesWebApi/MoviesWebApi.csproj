@@ -34,7 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Commands\Korisnici\" />
+    <Folder Include="Commands\Mapings\" />
   </ItemGroup>
 
 </Project>

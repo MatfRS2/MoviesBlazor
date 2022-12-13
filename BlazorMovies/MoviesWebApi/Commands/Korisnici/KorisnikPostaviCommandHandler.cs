@@ -23,15 +23,15 @@ namespace MoviesWebApi.Commands.Korisnici
         async Task<Result> IRequestHandler<KorisnikPostaviCommand, Result>.Handle(KorisnikPostaviCommand request,
             CancellationToken cancellationToken)
         {
-            var resultOne = await _context.Korisnik.FindAsync(request.Id);
-            if (resultOne == null)
+            var foundObj = await _context.Korisnik.FindAsync(request.Id);
+            if (foundObj == null)
                 return Result.Faliure(new Error("Error.InvalidId", "Nije korektan identifikator za Korisnik."));
-            resultOne.KorisnikId = request.KorisnikId;
-            resultOne.Email = request.EMail;
-            resultOne.Ime = request.Ime;
-            resultOne.Prezime = request.Prezime;
-            resultOne.Potroseno = request.Potorseno;
-            _context.Entry(resultOne).State = EntityState.Modified;
+            foundObj.KorisnikId = request.KorisnikId;
+            foundObj.Email = request.EMail;
+            foundObj.Ime = request.Ime;
+            foundObj.Prezime = request.Prezime;
+            foundObj.Potroseno = request.Potroseno;
+            _context.Entry(foundObj).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync(cancellationToken);

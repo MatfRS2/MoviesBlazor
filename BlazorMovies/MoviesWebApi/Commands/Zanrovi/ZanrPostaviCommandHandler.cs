@@ -8,7 +8,7 @@ using MoviesWebApi.ViewModels;
 
 namespace MoviesWebApi.Commands.Zanrovi
 {
-    internal sealed class ZanrPostaviCommandHandler : ICommandHandler<ZanPostavirCommand>
+    internal sealed class ZanrPostaviCommandHandler : ICommandHandler<ZanrPostaviCommand>
     {
 
         private readonly MoviesWebApiContext _context;
@@ -20,15 +20,15 @@ namespace MoviesWebApi.Commands.Zanrovi
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<ZanPostavirCommand, Result>.Handle(ZanPostavirCommand request,
+        async Task<Result> IRequestHandler<ZanrPostaviCommand, Result>.Handle(ZanrPostaviCommand request,
             CancellationToken cancellationToken)
         {
-            var zanr = await _context.Zanr.FindAsync(request.Id);
-            if (zanr == null)
+            var foundObj = await _context.Zanr.FindAsync(request.Id);
+            if (foundObj == null)
                 return Result.Faliure(new Error("Error.InvalidId", "Nije korektan identifikator za Zanr."));
-            zanr.ZanrId = request.ZanrId;
-            zanr.Naziv = request.ZanrNaziv;
-            _context.Entry(zanr).State = EntityState.Modified;
+            foundObj.ZanrId = request.ZanrId;
+            foundObj.Naziv = request.ZanrNaziv;
+            _context.Entry(foundObj).State = EntityState.Modified;
             try
             {
                 await _context.SaveChangesAsync(cancellationToken);

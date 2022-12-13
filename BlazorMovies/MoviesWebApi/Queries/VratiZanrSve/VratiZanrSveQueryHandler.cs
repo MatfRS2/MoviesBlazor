@@ -22,10 +22,8 @@ namespace MoviesWebApi.Queries.VratiZanrSve
         public async Task<Result<List<ZanrResponse>>> Handle(VratiZanrSveQuery request,
             CancellationToken cancellationToken)
         {
-            List<Zanr> zanrovi = await _context.Zanr.ToListAsync(cancellationToken);
-            List<ZanrResponse> ret = new List<ZanrResponse>();
-            foreach(var z in zanrovi)
-                ret.Add(new ZanrResponse(z.ZanrId, z.Naziv));
+            List<Zanr> resultList = await _context.Zanr.ToListAsync(cancellationToken);
+            var ret = _mapper.Map<List<Zanr>, List<ZanrResponse>>(resultList);
             return Result<List<ZanrResponse>>.Sucess(ret);
         }
 

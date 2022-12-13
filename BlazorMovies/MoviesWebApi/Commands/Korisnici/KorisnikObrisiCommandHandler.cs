@@ -5,29 +5,29 @@ using MoviesWebApi.Models;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Commands.Zanrovi
+namespace MoviesWebApi.Commands.Korisnici
 {
-    internal sealed class ZanrObrisiCommandHandler : ICommandHandler<ZanrObrisiCommand>
+    internal sealed class KorisnikObrisiCommandHandler : ICommandHandler<KorisnikObrisiCommand>
     {
 
         private readonly MoviesWebApiContext _context;
         private readonly IMapper _mapper;
 
-        public ZanrObrisiCommandHandler(MoviesWebApiContext context, IMapper mapper)
+        public KorisnikObrisiCommandHandler(MoviesWebApiContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<ZanrObrisiCommand, Result>.Handle(ZanrObrisiCommand request,
+        async Task<Result> IRequestHandler<KorisnikObrisiCommand, Result>.Handle(KorisnikObrisiCommand request,
             CancellationToken cancellationToken)
         {
-            var foundObj = await _context.Zanr.FindAsync(request.Id);
+            var foundObj = await _context.Korisnik.FindAsync(request.Id);
             if (foundObj == null)
             {
-                return Result.Faliure(new Error("Error.NoData", "Nema zanra sa datim identifikatorom."));
+                return Result.Faliure(new Error("Error.NoData", "Nema korisnika sa datim identifikatorom."));
             }
-            _context.Zanr.Remove(foundObj);
+            _context.Korisnik.Remove(foundObj);
             await _context.SaveChangesAsync(cancellationToken);
             return Result.Sucess();
         }

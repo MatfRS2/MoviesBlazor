@@ -49,7 +49,7 @@ namespace MoviesWebApi.Controllers
             {
                 return BadRequest();
             }
-            var command = new ZanPostavirCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
+            var command = new ZanrPostaviCommand(id, zanrDto.ZanrId, zanrDto.Naziv);
             var res = await _sender.Send(command, cancelationToken);
             if (res.IsFaliure)
                 return BadRequest(res.Error);

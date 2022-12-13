@@ -5,9 +5,9 @@ using MoviesWebApi.Models;
 using MoviesWebApi.Shared;
 using MoviesWebApi.ViewModels;
 
-namespace MoviesWebApi.Commands.Zanrovi
+namespace MoviesWebApi.Commands.Korisnici
 {
-    internal sealed class ZanrDodajCommandHandler : ICommandHandler<ZanrDodajCommand>
+    internal sealed class ZanrDodajCommandHandler : ICommandHandler<KorisnikDodajCommand>
     {
 
         private readonly MoviesWebApiContext _context;
@@ -19,15 +19,18 @@ namespace MoviesWebApi.Commands.Zanrovi
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        async Task<Result> IRequestHandler<ZanrDodajCommand, Result>.Handle(ZanrDodajCommand request,
+        async Task<Result> IRequestHandler<KorisnikDodajCommand, Result>.Handle(KorisnikDodajCommand request,
             CancellationToken cancellationToken)
         {
-            var newObj = new Zanr()
+            var newObject = new Korisnik()
             {
-                ZanrId = request.ZanrId,
-                Naziv = request.ZanrNaziv,
+                KorisnikId = request.KorisnikId,
+                Email = request.EMail,
+                Ime = request.Ime,
+                Prezime = request.Prezime,   
+                Potroseno= request.Potroseno,
             };
-            _context.Zanr.Add(newObj);
+            _context.Korisnik.Add(newObject);
             await _context.SaveChangesAsync(cancellationToken);
             return Result.Sucess();
         }
