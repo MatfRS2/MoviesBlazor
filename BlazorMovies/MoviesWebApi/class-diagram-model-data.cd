@@ -32,9 +32,10 @@
       <FileName>Models\Paket.cs</FileName>
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
-      <Property Name="Filmovi" />
       <Property Name="FilmPaketi" />
+      <Property Name="Filmovi" />
       <Property Name="Korisnici" />
+      <Property Name="Pretplate" />
     </ShowAsCollectionAssociation>
   </Class>
   <Class Name="MoviesWebApi.Models.Zanr">
@@ -67,6 +68,7 @@
     </TypeIdentifier>
     <ShowAsCollectionAssociation>
       <Property Name="Paketi" />
+      <Property Name="Pretplate" />
     </ShowAsCollectionAssociation>
   </Class>
   <Enum Name="MoviesWebApi.Models.PretplataStatus">
